@@ -1,5 +1,5 @@
-import { $, errText } from "./core.js?v=202610071416";
-import { api, MODE } from "./api.js?v=202610071416";
+import { $, errText } from "./core.js?v=202610071424";
+import { api, MODE } from "./api.js?v=202610071424";
 
 const go = me => { location.href = me.role === "admin" ? "index.html" : "beheer.html"; };
 
