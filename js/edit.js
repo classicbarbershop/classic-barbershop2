@@ -1,6 +1,6 @@
 // Bewerkmodus voor de eigenaar (rol: admin). Wordt alleen geladen na inloggen.
-import { $, $$, esc, fmt, clone, uid, sanitize, compressImage, toast, errText, ask, DAY_NAMES } from "./core.js?v=202610071512";
-import { api } from "./api.js?v=202610071512";
+import { $, $$, esc, fmt, clone, uid, sanitize, compressImage, toast, errText, ask, DAY_NAMES } from "./core.js?v=202610071654";
+import { api } from "./api.js?v=202610071654";
 
 const KEY_LABEL = { texts: "teksten", images: "foto's", services: "prijzen", gallery: "galerij", hours: "openingsuren", settings: "instellingen", locations: "vestigingen" };
 
@@ -96,6 +96,14 @@ export function startEditor({ getContent, setContent }) {
       el.spellcheck = true;
       if (el.dataset.edWired) return;
       el.dataset.edWired = "1";
+      // enters/inspringing uit de HTML-broncode niet als lege regels tonen tijdens het bewerken
+      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+      const texts = [];
+      while (walker.nextNode()) texts.push(walker.currentNode);
+      for (const t of texts) {
+        if (!t.textContent.trim() && /\n/.test(t.textContent)) t.remove();
+        else t.textContent = t.textContent.replace(/\s*\n\s*/g, " ");
+      }
       el.addEventListener("input", () => {
         draft.texts[el.dataset.edit] = sanitize(el.innerHTML);
         markDirty("texts");

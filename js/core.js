@@ -108,7 +108,8 @@ export function sanitize(html) {
   };
   const root = doc.body.firstChild;
   walk(root);
-  return root.innerHTML.replace(/(<br>)+$/, "").trim();
+  // nieuwe regel getypt in de bewerkmodus (\n) → <br>
+  return root.innerHTML.replace(/\n/g, "<br>").replace(/(<br>)+$/, "").trim();
 }
 
 // ---------- Foto verkleinen voor upload ----------

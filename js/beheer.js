@@ -2,8 +2,8 @@
 import {
   $, $$, esc, fmt, euro, pad, toast, errText, DAY_SHORT, MONTHS, brusselsNow, brusselsToDate, inBrussels,
   addDays, dowOf, dayLabel, hoursFor, ask
-} from "./core.js?v=202610071512";
-import { api, loadContent } from "./api.js?v=202610071512";
+} from "./core.js?v=202610071654";
+import { api, loadContent } from "./api.js?v=202610071654";
 
 const STATUS = {
   bevestigd: { label: "Bevestigd", cls: "s-ok" },

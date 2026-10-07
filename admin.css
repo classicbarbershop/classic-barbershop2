@@ -352,3 +352,7 @@ body.legal { padding: 48px 0 80px; }
 .ask__btn--ok { background: #fff; color: #111; border-color: #fff; }
 .ask__btn--danger { background: #c4462f; color: #fff; border-color: #c4462f; }
 @keyframes askIn { from { opacity: 0; } }
+
+/* vinkjes in formulieren niet de maat van een invulveld geven */
+.bh-form input[type=checkbox], .ed-panel input[type=checkbox] { width: 18px; height: 18px; padding: 0; flex: none; }
+.bh-form .ed-check { align-self: center; color: var(--muted); }
