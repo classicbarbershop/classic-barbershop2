@@ -15,6 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Manrope:wght@400;500;600;700&family=Pinyon+Script&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="admin.css">
 
   <script type="application/ld+json">
   [
@@ -75,13 +76,13 @@
 
       <div class="container hero__grid">
         <div class="hero__copy">
-          <p class="eyebrow reveal">Barbershop &nbsp;·&nbsp; Haacht &amp; Wilsele</p>
-          <h1 class="hero__title reveal">
+          <p class="eyebrow reveal" data-edit="hero.eyebrow">Barbershop &nbsp;·&nbsp; Haacht &amp; Wilsele</p>
+          <h1 class="hero__title reveal" data-edit="hero.title">
             <span>Vakwerk.</span>
             <span>Precisie.</span>
             <span class="script gold-text">Classic.</span>
           </h1>
-          <p class="hero__lead reveal">Bij Classic Barbershop combineren wij vakmanschap, precisie en premium service voor de perfecte look. Twee vestigingen, elke dag open — boek eenvoudig online en ervaar het verschil.</p>
+          <p class="hero__lead reveal" data-edit="hero.lead">Bij Classic Barbershop combineren wij vakmanschap, precisie en premium service voor de perfecte look. Twee vestigingen, elke dag open — boek eenvoudig online en ervaar het verschil.</p>
 
           <div class="hero__actions reveal">
             <a href="#boeken" class="btn btn--gold">Maak een afspraak
@@ -100,9 +101,9 @@
         </div>
 
         <div class="hero__visual" aria-hidden="true">
-          <figure class="card card--a"><img src="img/fade-in-de-zaak.jpg" alt=""></figure>
-          <figure class="card card--b"><img src="img/textured-fringe.jpg" alt=""></figure>
-          <figure class="card card--c"><img src="img/skin-fade.jpg" alt=""></figure>
+          <figure class="card card--a"><img src="img/fade-in-de-zaak.jpg" alt="" data-img="hero_a"></figure>
+          <figure class="card card--b"><img src="img/textured-fringe.jpg" alt="" data-img="hero_b"></figure>
+          <figure class="card card--c"><img src="img/skin-fade.jpg" alt="" data-img="hero_c"></figure>
           <div class="badge-open" id="heroStatus">
             <span class="dot"></span><span class="badge-open__text">Elke dag open · Haacht &amp; Wilsele</span>
           </div>
@@ -124,14 +125,14 @@
     <section class="section about">
       <div class="container about__grid">
         <div class="about__media reveal">
-          <img src="img/haacht-hexagon.jpg" alt="Interieur van Classic Barbershop Haacht met het hexagon-lichtplafond" loading="lazy">
-          <img src="img/balie-neon.jpg" alt="Balie met Classic Barbershop-logo en neon-schaar in Wilsele" loading="lazy" class="about__media-sm">
+          <img data-img="about_main" src="img/haacht-hexagon.jpg" alt="Interieur van Classic Barbershop Haacht met het hexagon-lichtplafond" loading="lazy">
+          <img data-img="about_small" src="img/balie-neon.jpg" alt="Balie met Classic Barbershop-logo en neon-schaar in Wilsele" loading="lazy" class="about__media-sm">
         </div>
         <div class="about__copy">
-          <p class="eyebrow reveal">Waarom Classic Barbershop?</p>
-          <h2 class="h2 reveal">Meer dan een gewone barbershop.<br><em class="gold-text">Gentlemen's cut &amp; shave.</em></h2>
-          <p class="reveal">Ervaren barbiers met oog voor detail, precisie en de nieuwste technieken. Wij werken uitsluitend met professionele materialen en zorgen voor persoonlijke service in een ontspannen sfeer.</p>
-          <p class="reveal">Bezoek ons in Haacht of Wilsele en kies de locatie die het beste bij jou past — ook in de avonden en het weekend geopend. Reserveer eenvoudig online en kies zelf je datum en tijd.</p>
+          <p class="eyebrow reveal" data-edit="about.eyebrow">Waarom Classic Barbershop?</p>
+          <h2 class="h2 reveal" data-edit="about.title">Meer dan een gewone barbershop.<br><em class="gold-text">Gentlemen's cut &amp; shave.</em></h2>
+          <p class="reveal" data-edit="about.p1">Ervaren barbiers met oog voor detail, precisie en de nieuwste technieken. Wij werken uitsluitend met professionele materialen en zorgen voor persoonlijke service in een ontspannen sfeer.</p>
+          <p class="reveal" data-edit="about.p2">Bezoek ons in Haacht of Wilsele en kies de locatie die het beste bij jou past — ook in de avonden en het weekend geopend. Reserveer eenvoudig online en kies zelf je datum en tijd.</p>
 
           <dl class="stats reveal">
             <div><dt>4,8<span>★</span></dt><dd>Google-score</dd></div>
@@ -148,11 +149,11 @@
       <div class="hex hex--faint" aria-hidden="true"></div>
       <div class="container">
         <header class="section__head">
-          <p class="eyebrow reveal">Onze prijslijst</p>
-          <h2 class="h2 reveal">Kies je <em class="gold-text">behandeling</em></h2>
+          <p class="eyebrow reveal" data-edit="services.eyebrow">Onze prijslijst</p>
+          <h2 class="h2 reveal" data-edit="services.title">Kies je <em class="gold-text">behandeling</em></h2>
         </header>
 
-        <div class="menu">
+        <div class="menu" id="menu">
           <div class="menu__col reveal">
             <h3 class="menu__cat">Heren</h3>
             <ul>
@@ -178,7 +179,7 @@
             </ul>
           </div>
         </div>
-        <p class="menu__note reveal">* Bij online reserveringen wordt een toeslag van €5 aangerekend.</p>
+        <p class="menu__note reveal" id="menuNote">* Bij online reserveringen wordt een toeslag van €5 aangerekend.</p>
       </div>
     </section>
 
@@ -187,8 +188,8 @@
       <div class="container">
         <header class="section__head section__head--row">
           <div>
-            <p class="eyebrow reveal">Uit de stoel</p>
-            <h2 class="h2 reveal">Het <em class="gold-text">werk</em> spreekt</h2>
+            <p class="eyebrow reveal" data-edit="work.eyebrow">Uit de stoel</p>
+            <h2 class="h2 reveal" data-edit="work.title">Het <em class="gold-text">werk</em> spreekt</h2>
           </div>
           <a href="https://www.instagram.com/classic_barbershop_by_ali" target="_blank" rel="noopener" class="link-arrow reveal">
             Volg @classic_barbershop_by_ali
@@ -196,7 +197,7 @@
           </a>
         </header>
 
-        <div class="gallery">
+        <div class="gallery" id="gallery">
           <button class="gallery__item g-tall reveal" data-src="img/textured-fringe.jpg" data-cap="Textured fringe met taper"><img src="img/textured-fringe.jpg" alt="Textured fringe met taper fade" loading="lazy"><span>Textured fringe</span></button>
           <button class="gallery__item reveal" data-src="img/textured-crop.jpg" data-cap="Textured crop"><img src="img/textured-crop.jpg" alt="Textured crop met fade" loading="lazy"><span>Textured crop</span></button>
           <button class="gallery__item reveal" data-src="img/skin-fade.jpg" data-cap="Skin fade"><img src="img/skin-fade.jpg" alt="Skin fade met strakke lijn" loading="lazy"><span>Skin fade</span></button>
@@ -213,7 +214,7 @@
     <section class="section reviews" id="reviews">
       <div class="container reviews__grid">
         <div class="reviews__score reveal">
-          <p class="eyebrow">Wat klanten zeggen</p>
+          <p class="eyebrow" data-edit="reviews.eyebrow">Wat klanten zeggen</p>
           <div class="big-score">4,8</div>
           <div class="stars stars--lg" aria-label="5 sterren">★★★★★</div>
           <p class="muted">Haacht <strong>4,8 (252)</strong> · Wilsele <strong>4,9 (57)</strong></p>
@@ -225,18 +226,18 @@
         <div class="quotes">
           <blockquote class="quote reveal">
             <div class="stars">★★★★★</div>
-            <p>“Ik kom hier al jaren met m'n zoon. Enige plaats waar we zeker zijn dat het goed gedaan is. Enorm vriendelijke mannen, die geduld hebben met kinderen. Toppers!”</p>
-            <footer><span class="avatar">I</span><span><strong>Inge P.</strong><small>Google review · Haacht</small></span></footer>
+            <p data-edit="review1.text">“Ik kom hier al jaren met m'n zoon. Enige plaats waar we zeker zijn dat het goed gedaan is. Enorm vriendelijke mannen, die geduld hebben met kinderen. Toppers!”</p>
+            <footer><span class="avatar">I</span><span><strong data-edit="review1.name">Inge P.</strong><small data-edit="review1.meta">Google review · Haacht</small></span></footer>
           </blockquote>
           <blockquote class="quote reveal">
             <div class="stars">★★★★★</div>
-            <p>“Ik kom er al 2 jaar en nog geen enkele keer ontevreden geweest. Knipt precies op de centimeters en knipt je fris.”</p>
-            <footer><span class="avatar">J</span><span><strong>Justin S.</strong><small>Google review · Haacht</small></span></footer>
+            <p data-edit="review2.text">“Ik kom er al 2 jaar en nog geen enkele keer ontevreden geweest. Knipt precies op de centimeters en knipt je fris.”</p>
+            <footer><span class="avatar">J</span><span><strong data-edit="review2.name">Justin S.</strong><small data-edit="review2.meta">Google review · Haacht</small></span></footer>
           </blockquote>
           <blockquote class="quote reveal">
             <div class="stars">★★★★★</div>
-            <p>“Beste kapper in heel de buurt! Top service, super vriendelijk personeel. Kreeg zelfs nog een drankje erbij. Gewoon perfect.”</p>
-            <footer><span class="avatar">M</span><span><strong>M. VH</strong><small>Google review · Wilsele</small></span></footer>
+            <p data-edit="review3.text">“Beste kapper in heel de buurt! Top service, super vriendelijk personeel. Kreeg zelfs nog een drankje erbij. Gewoon perfect.”</p>
+            <footer><span class="avatar">M</span><span><strong data-edit="review3.name">M. VH</strong><small data-edit="review3.meta">Google review · Wilsele</small></span></footer>
           </blockquote>
         </div>
       </div>
@@ -247,13 +248,13 @@
       <div class="hex hex--faint" aria-hidden="true"></div>
       <div class="container booking__grid">
         <div class="booking__intro">
-          <p class="eyebrow reveal">Afspraak maken</p>
-          <h2 class="h2 reveal">Reserveer je <em class="gold-text">stoel</em></h2>
-          <p class="reveal">Kies je vestiging, categorie en dienst, vul je gegevens in en kies zelf een beschikbare datum en tijd. Je afspraak wordt meteen doorgestuurd naar de zaak.</p>
+          <p class="eyebrow reveal" data-edit="booking.eyebrow">Afspraak maken</p>
+          <h2 class="h2 reveal" data-edit="booking.title">Reserveer je <em class="gold-text">stoel</em></h2>
+          <p class="reveal" data-edit="booking.intro">Kies je vestiging, categorie en dienst, vul je gegevens in en kies zelf een vrije datum en tijd. Je afspraak staat meteen vast.</p>
           <ul class="checks reveal">
             <li>Geen account nodig</li>
             <li>Kies zelf je datum en tijd</li>
-            <li>Bevestiging via WhatsApp</li>
+            <li id="checkConfirm">Meteen bevestigd</li>
             <li><span>Liever bellen? Haacht&nbsp;<a href="tel:+32470513916">0470&nbsp;51&nbsp;39&nbsp;16</a> · Wilsele&nbsp;<a href="tel:+32492860437">0492&nbsp;86&nbsp;04&nbsp;37</a></span></li>
           </ul>
         </div>
@@ -274,8 +275,8 @@
     <section class="section locations" id="locaties">
       <div class="container">
         <header class="section__head">
-          <p class="eyebrow reveal">Onze vestigingen</p>
-          <h2 class="h2 reveal">Twee zaken, <em class="gold-text">één standaard</em></h2>
+          <p class="eyebrow reveal" data-edit="loc.eyebrow">Onze vestigingen</p>
+          <h2 class="h2 reveal" data-edit="loc.title">Twee zaken, <em class="gold-text">één standaard</em></h2>
         </header>
 
         <div class="loc-grid">
@@ -322,10 +323,10 @@
 
     <!-- ============ CTA ============ -->
     <section class="cta">
-      <div class="cta__bg" aria-hidden="true"><img src="img/haacht-hexagon.jpg" alt=""></div>
+      <div class="cta__bg" aria-hidden="true"><img src="img/haacht-hexagon.jpg" alt="" data-img="cta_bg"></div>
       <div class="container cta__inner">
-        <h2 class="h2 reveal">Klaar voor een <em class="gold-text">frisse cut?</em></h2>
-        <p class="reveal">Zeker van je plek? Boek vooraf in Haacht of Wilsele en sla de wachtrij over.</p>
+        <h2 class="h2 reveal" data-edit="cta.title">Klaar voor een <em class="gold-text">frisse cut?</em></h2>
+        <p class="reveal" data-edit="cta.text">Zeker van je plek? Boek vooraf in Haacht of Wilsele en sla de wachtrij over.</p>
         <div class="hero__actions reveal">
           <a href="#boeken" class="btn btn--gold">Boek nu</a>
           <a href="https://www.instagram.com/classic_barbershop_by_ali" target="_blank" rel="noopener" class="btn btn--ghost">Instagram</a>
@@ -343,11 +344,11 @@
           <span class="brand__stars" aria-hidden="true">★★★</span>
           <span class="brand__sub">Barber Shop</span>
         </a>
-        <p class="muted">Professionele kapsels, baardverzorging<br>en premium service in Haacht &amp; Wilsele.</p>
+        <p class="muted" data-edit="footer.text">Professionele kapsels, baardverzorging<br>en premium service in Haacht &amp; Wilsele.</p>
       </div>
       <div>
         <h4>Openingsuren</h4>
-        <p class="muted">Haacht — di–vr 09:00–19:00<br>za–ma 09:00–18:00<br>Wilsele — ma–vr 10:00–19:00<br>za–zo 10:00–18:00</p>
+        <p class="muted" id="footerHours">Haacht — di–vr 09:00–19:00<br>za–ma 09:00–18:00<br>Wilsele — ma–vr 10:00–19:00<br>za–zo 10:00–18:00</p>
       </div>
       <div>
         <h4>Contact</h4>
@@ -370,7 +371,13 @@
       </div>
     </div>
     <div class="container footer__bottom">
-      <span>© <span id="year"></span> Classic Barbershop. Alle rechten voorbehouden.</span>
+      <span class="footer__left">
+        <a href="login.html" class="footer__login" id="loginLink">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          Inloggen
+        </a>
+        <span>© <span id="year"></span> Classic Barbershop. Alle rechten voorbehouden.</span>
+      </span>
       <a href="#top">Naar boven ↑</a>
     </div>
   </footer>
@@ -391,6 +398,7 @@
     <button class="lightbox__nav lightbox__next" id="lbNext" aria-label="Volgende">›</button>
   </div>
 
-  <script src="script.js"></script>
+  <script src="config.js"></script>
+  <script type="module" src="js/site.js"></script>
 </body>
 </html>

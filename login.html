@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="nl-BE">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inloggen — Classic Barbershop</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0a0907">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0907'/%3E%3Ctext x='50%25' y='58%25' text-anchor='middle' dominant-baseline='middle' font-family='Georgia,serif' font-style='italic' font-size='40' fill='%23d4af6a'%3EC%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Manrope:wght@400;500;600;700&family=Pinyon+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body class="auth">
+  <div class="hex hex--faint" aria-hidden="true"></div>
+  <main class="auth__card">
+    <a href="index.html" class="brand brand--lg auth__brand" aria-label="Terug naar de website">
+      <span class="brand__script">Classic</span>
+      <span class="brand__stars" aria-hidden="true">★★★</span>
+      <span class="brand__sub">Barber Shop</span>
+    </a>
+    <h1 class="auth__title">Inloggen</h1>
+    <p class="muted auth__lead">Voor de eigenaar en de vestigingen.</p>
+
+    <form id="loginForm" novalidate>
+      <label class="field"><span>Gebruikersnaam</span>
+        <input type="text" id="user" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="bv. haacht" required></label>
+      <label class="field"><span>Wachtwoord</span>
+        <span class="pw">
+          <input type="password" id="pass" autocomplete="current-password" required>
+          <button type="button" class="pw__toggle" id="pwToggle" aria-label="Wachtwoord tonen">Toon</button>
+        </span></label>
+      <button type="submit" class="btn btn--gold btn--block" id="loginBtn">Inloggen</button>
+      <p class="book__err" id="loginErr" role="alert"></p>
+    </form>
+
+    <p class="auth__demo" id="demoNote" hidden></p>
+    <a href="index.html" class="auth__back">← Terug naar de website</a>
+  </main>
+
+  <script src="config.js"></script>
+  <script type="module" src="js/login.js"></script>
+</body>
+</html>
