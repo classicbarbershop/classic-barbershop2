@@ -136,117 +136,186 @@
   renderStatus();
   setInterval(renderStatus, 60_000);
 
-  // ---------- Boekingsformulier ----------
-  const form = $("#bookForm");
-  const daysEl = $("#days");
-  const slotsEl = $("#slots");
-  const summary = $("#summary");
-  const err = $("#bookErr");
+  // ---------- Afspraak maken: stappen zoals op de site van Classic Barbershop ----------
+  // Vestiging → categorie → dienst → gegevens → datum & tijd → overzicht → bevestigen
+  const SERVICES = {
+    heren: { label: "Heren", icon: "✂️", items: [
+      { name: "Knippen", min: 30, price: 20 },
+      { name: "Wassen & knippen", min: 35, price: 25 },
+      { name: "Baard & haar", min: 45, price: 35 },
+      { name: "Baard scheren met/of aflijnen", min: 25, price: 20 },
+      { name: "Bruid VIP", min: 60, price: 50 },
+    ] },
+    kinderen: { label: "Kinderen onder 10 jaar", icon: "👦", items: [
+      { name: "Jongens", min: 25, price: 15 },
+      { name: "Fade", min: 30, price: 20 },
+      { name: "Meisjes", min: 25, price: 20 },
+    ] },
+    dames: { label: "Dames", icon: "👩", items: [
+      { name: "Knippen", min: 35, price: 25 },
+      { name: "Wassen & handdoeken", min: 25, price: 15 },
+      { name: "Wassen, knippen & handdoeken", min: 50, price: 30 },
+    ] },
+  };
+  const ONLINE_FEE = 5;
+  const ADDR = { haacht: "Vekestraat 1, 3150 Haacht", wilsele: "Aarschotsesteenweg 664, 3012 Wilsele" };
+  const STEP_TITLES = ["Kies een vestiging", "Kies een categorie", "Kies een dienst", "Vul uw gegevens in", "Kies datum en tijd", "Overzicht"];
 
-  function buildDays() {
-    const { date } = brusselsNow();
-    let html = "";
-    let firstSelectable = null;
-    for (let i = 0; i < 14; i++) {
-      const d = new Date(date);
-      d.setDate(d.getDate() + i);
-      const closed = !HOURS[currentLoc()][d.getDay()];
-      const iso = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-      const label = i === 0 ? "vandaag" : i === 1 ? "morgen" : DAY_SHORT[d.getDay()];
-      const disabled = closed || (i === 0 && slotsFor(iso).every(s => s.past));
-      if (!disabled && firstSelectable === null) firstSelectable = iso;
-      html += `<label><input type="radio" name="day" value="${iso}" ${disabled ? "disabled" : ""}>
-        <span><small>${label}</small><b>${d.getDate()}</b><em>${MONTHS[d.getMonth()]}</em></span></label>`;
-    }
-    daysEl.innerHTML = html;
-    if (firstSelectable) $(`input[value="${firstSelectable}"]`, daysEl).checked = true;
-  }
-
-  function currentLoc() { return $("input[name=loc]:checked", form).value; }
-  function serviceMinutes() { return +($("#service").selectedOptions[0]?.dataset.min || SLOT_MIN); }
+  const bBody = $("#bBody"), bTitle = $("#bTitle"), bCount = $("#bCount"), bBar = $("#bBar"), err = $("#bookErr");
+  const st = { step: 0 };
+  const euro = n => `€${n},00`;
+  const isoOf = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const dateOf = iso => { const [y, mo, da] = iso.split("-").map(Number); return new Date(y, mo - 1, da); };
+  const dayLabel = iso => { const d = dateOf(iso); return `${DAY_NAMES[d.getDay()].toLowerCase()} ${d.getDate()} ${MONTHS[d.getMonth()]}`; };
+  const esc = v => String(v).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
   function slotsFor(iso) {
     const { date, minutes } = brusselsNow();
-    const todayIso = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
-    const [y, mo, da] = iso.split("-").map(Number);
-    const h = HOURS[currentLoc()][new Date(y, mo - 1, da).getDay()];
+    const h = HOURS[st.loc][dateOf(iso).getDay()];
+    if (!h) return [];
     const out = [];
-    if (!h) return out;
-    const dur = serviceMinutes();
-    for (let m = h[0]; m + dur <= h[1]; m += SLOT_MIN) {
-      out.push({ m, past: iso === todayIso && m <= minutes + 15 });
+    for (let m = h[0]; m + st.svc.min <= h[1]; m += SLOT_MIN) {
+      out.push({ m, past: iso === isoOf(date) && m <= minutes + 15 });
     }
     return out;
   }
 
-  function buildSlots() {
-    const day = form.day && $("input[name=day]:checked", form);
-    if (!day) { slotsEl.innerHTML = `<p class="slots__empty">Kies eerst een dag.</p>`; return; }
-    slotsEl.innerHTML = slotsFor(day.value).map(s =>
-      `<label><input type="radio" name="time" value="${fmt(s.m)}" ${s.past ? "disabled" : ""}><span>${fmt(s.m)}</span></label>`
-    ).join("");
-  }
+  const backBtn = `<button type="button" class="bnav__back" data-back>← Terug</button>`;
 
-  function selection() {
-    const loc = $("input[name=loc]:checked", form).value;
-    const service = $("#service").value;
-    const dayIn = $("input[name=day]:checked", form);
-    const timeIn = $("input[name=time]:checked", form);
-    const name = $("#name").value.trim();
-    const note = $("#note").value.trim();
-    let dayLabel = "";
-    if (dayIn) {
-      const [y, mo, da] = dayIn.value.split("-").map(Number);
-      const d = new Date(y, mo - 1, da);
-      dayLabel = `${DAY_NAMES[d.getDay()].toLowerCase()} ${da} ${MONTHS[mo - 1]}`;
-    }
-    return { loc, service, day: dayIn?.value, dayLabel, time: timeIn?.value, name, note };
-  }
-
-  function updateSummary() {
-    const s = selection();
+  function render() {
     err.textContent = "";
-    if (!s.day || !s.time) { summary.textContent = "Kies een dag en tijdstip."; return; }
-    summary.innerHTML = `<strong>${s.service}</strong> · ${s.dayLabel} om <strong>${s.time}</strong> · ${LOC_NAME[s.loc]}`;
+    bTitle.textContent = STEP_TITLES[st.step] || "";
+    bCount.textContent = `Stap ${st.step + 1} van 6`;
+    bBar.style.width = `${Math.min(st.step + 1, 6) / 6 * 100}%`;
+    let html = "";
+
+    if (st.step === 0) {
+      html = `<div class="choices">${["haacht", "wilsele"].map(k =>
+        `<button type="button" class="choice${st.loc === k ? " is-active" : ""}" data-loc="${k}"><span class="choice__ico">📍</span>${LOC_NAME[k]}<small>${ADDR[k]}</small></button>`).join("")}</div>`;
+    }
+    if (st.step === 1) {
+      html = `<div class="choices choices--list">${Object.entries(SERVICES).map(([k, c]) =>
+        `<button type="button" class="choice${st.cat === k ? " is-active" : ""}" data-cat="${k}"><span class="choice__ico">${c.icon}</span>${c.label}<small>${c.items.length} behandelingen</small></button>`).join("")}</div>
+        <div class="bnav">${backBtn}</div>`;
+    }
+    if (st.step === 2) {
+      html = `<div class="choices choices--list">${SERVICES[st.cat].items.map((s, i) =>
+        `<button type="button" class="choice choice--row${st.svc === s ? " is-active" : ""}" data-svc="${i}"><span>${s.name}<br><small>${s.min} min</small></span><b>${euro(s.price + ONLINE_FEE)}</b></button>`).join("")}</div>
+        <p class="bnote" style="margin-top:14px">Online prijs, inclusief €${ONLINE_FEE} reservatietoeslag.</p>
+        <div class="bnav">${backBtn}</div>`;
+    }
+    if (st.step === 3) {
+      html = `<div class="bfields">
+          <label class="field"><span>Naam</span><input type="text" id="bName" autocomplete="name" placeholder="Voor- en achternaam" value="${esc(st.name || "")}"></label>
+          <label class="field"><span>Telefoonnummer</span><input type="tel" id="bPhone" autocomplete="tel" placeholder="04xx xx xx xx" value="${esc(st.phone || "")}"></label>
+          <label class="field"><span>E-mail</span><input type="email" id="bEmail" autocomplete="email" placeholder="naam@voorbeeld.be" value="${esc(st.email || "")}"></label>
+        </div>
+        <div class="bnav">${backBtn}<button type="button" class="btn btn--gold" data-next>Volgende</button></div>`;
+    }
+    if (st.step === 4) {
+      const { date } = brusselsNow();
+      let days = "", first = null;
+      for (let i = 0; i < 14; i++) {
+        const d = new Date(date); d.setDate(d.getDate() + i);
+        const iso = isoOf(d);
+        const label = i === 0 ? "vandaag" : i === 1 ? "morgen" : DAY_SHORT[d.getDay()];
+        const disabled = slotsFor(iso).every(s => s.past);
+        if (!disabled && !first) first = iso;
+        days += `<label><input type="radio" name="bday" value="${iso}" ${disabled ? "disabled" : ""}><span><small>${label}</small><b>${d.getDate()}</b><em>${MONTHS[d.getMonth()]}</em></span></label>`;
+      }
+      if (!st.day || slotsFor(st.day).every(s => s.past)) { st.day = first; st.time = null; }
+      html = `<p class="bstep__sub">Datum</p><div class="days" id="bDays">${days}</div>
+        <p class="bstep__sub">Tijdstip</p><div class="slots" id="bSlots"></div>
+        <div class="bnav">${backBtn}<button type="button" class="btn btn--gold" data-next>Volgende</button></div>`;
+    }
+    if (st.step === 5) {
+      html = `<ul class="bsum">
+          <li><span>Vestiging</span><strong>${LOC_LABEL[st.loc]}</strong></li>
+          <li><span>Categorie</span><strong>${SERVICES[st.cat].label}</strong></li>
+          <li><span>Dienst</span><strong>${st.svc.name} · ${st.svc.min} min</strong></li>
+          <li><span>Datum &amp; tijd</span><strong>${dayLabel(st.day)} om ${st.time}</strong></li>
+          <li><span>Naam</span><strong>${esc(st.name)}</strong></li>
+          <li><span>Telefoon</span><strong>${esc(st.phone)}</strong></li>
+          <li><span>E-mail</span><strong>${esc(st.email)}</strong></li>
+          <li class="bsum__total"><span>Totaal</span><strong>${euro(st.svc.price + ONLINE_FEE)}</strong></li>
+        </ul>
+        <p class="bnote">Na het bevestigen wordt je afspraak via WhatsApp naar Classic Barbershop ${LOC_NAME[st.loc]} gestuurd.</p>
+        <div class="bnav">${backBtn}<button type="button" class="btn btn--gold" data-confirm>Afspraak bevestigen</button></div>`;
+    }
+    if (st.step === 6) {
+      html = `<div class="bdone"><div class="bdone__ico">✓</div>
+          <p><strong>Bedankt, ${esc(st.name.split(" ")[0])}!</strong><br><span class="muted">Je afspraak is doorgestuurd naar Classic Barbershop ${LOC_NAME[st.loc]}. Ze bevestigen zo snel mogelijk.</span></p>
+          <button type="button" class="btn btn--ghost" data-restart>Nieuwe afspraak</button></div>`;
+      bTitle.textContent = "Afspraak verstuurd";
+      bCount.textContent = "Klaar";
+    }
+
+    bBody.innerHTML = html;
+    bBody.style.animation = "none"; void bBody.offsetHeight; bBody.style.animation = "";
+    wire();
   }
 
-  buildDays();
-  buildSlots();
-  updateSummary();
+  function go(n) { st.step = n; render(); }
 
-  form.addEventListener("change", e => {
-    if (e.target.name === "loc" || e.target.name === "service") {
-      const keep = $("input[name=day]:checked", form)?.value;
-      buildDays();
-      const again = keep && $(`input[value="${keep}"]:not(:disabled)`, daysEl);
-      if (again) again.checked = true;
-      buildSlots();
+  function drawSlots() {
+    const el = $("#bSlots");
+    if (!el) return;
+    const list = st.day ? slotsFor(st.day) : [];
+    el.innerHTML = list.length
+      ? list.map(s => `<label><input type="radio" name="btime" value="${fmt(s.m)}" ${s.past ? "disabled" : ""} ${st.time === fmt(s.m) ? "checked" : ""}><span>${fmt(s.m)}</span></label>`).join("")
+      : `<p class="slots__empty">Kies eerst een dag.</p>`;
+  }
+
+  function wire() {
+    $("[data-back]", bBody)?.addEventListener("click", () => go(st.step - 1));
+    $$("[data-loc]", bBody).forEach(b => b.addEventListener("click", () => { if (st.loc !== b.dataset.loc) { st.day = null; st.time = null; } st.loc = b.dataset.loc; go(1); }));
+    $$("[data-cat]", bBody).forEach(b => b.addEventListener("click", () => { if (st.cat !== b.dataset.cat) st.svc = null; st.cat = b.dataset.cat; go(2); }));
+    $$("[data-svc]", bBody).forEach(b => b.addEventListener("click", () => { st.svc = SERVICES[st.cat].items[+b.dataset.svc]; st.time = null; go(3); }));
+
+    if (st.step === 3) {
+      $("[data-next]", bBody).addEventListener("click", () => {
+        st.name = $("#bName").value.trim();
+        st.phone = $("#bPhone").value.trim();
+        st.email = $("#bEmail").value.trim();
+        if (!st.name) { $("#bName").focus(); return (err.textContent = "Vul je naam in."); }
+        if (st.phone.replace(/\D/g, "").length < 9) { $("#bPhone").focus(); return (err.textContent = "Vul een geldig telefoonnummer in."); }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(st.email)) { $("#bEmail").focus(); return (err.textContent = "Vul een geldig e-mailadres in."); }
+        go(4);
+      });
     }
-    if (e.target.name === "day") buildSlots();
-    updateSummary();
-  });
+    if (st.step === 4) {
+      const pick = st.day && $(`input[name=bday][value="${st.day}"]`, bBody);
+      if (pick) pick.checked = true;
+      drawSlots();
+      $("#bDays").addEventListener("change", e => { st.day = e.target.value; st.time = null; err.textContent = ""; drawSlots(); });
+      $("#bSlots").addEventListener("change", e => { st.time = e.target.value; err.textContent = ""; });
+      $("[data-next]", bBody).addEventListener("click", () => {
+        if (!st.day) return (err.textContent = "Kies een datum.");
+        if (!st.time) return (err.textContent = "Kies een tijdstip.");
+        go(5);
+      });
+    }
+    if (st.step === 5) {
+      $("[data-confirm]", bBody).addEventListener("click", () => {
+        const msg = [
+          `Hallo Classic Barbershop ${LOC_NAME[st.loc]}! 💈 Ik wil graag een afspraak maken.`,
+          ``,
+          `• Dienst: ${st.svc.name} (${SERVICES[st.cat].label}) — ${euro(st.svc.price + ONLINE_FEE)}`,
+          `• Wanneer: ${dayLabel(st.day)} om ${st.time}`,
+          `• Naam: ${st.name}`,
+          `• Telefoon: ${st.phone}`,
+          `• E-mail: ${st.email}`,
+          ``,
+          `Graag een bevestiging. Bedankt!`,
+        ].join("\n");
+        window.open(`https://wa.me/${PHONES[st.loc]}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
+        go(6);
+      });
+    }
+    $("[data-restart]", bBody)?.addEventListener("click", () => { Object.assign(st, { step: 0, loc: null, cat: null, svc: null, day: null, time: null }); render(); });
+  }
 
-  form.addEventListener("submit", e => {
-    e.preventDefault();
-    const s = selection();
-    if (!s.day) return (err.textContent = "Kies een dag.");
-    if (!s.time) return (err.textContent = "Kies een tijdstip.");
-    if (!s.name) { $("#name").focus(); return (err.textContent = "Vul je naam in."); }
-
-    const msg = [
-      `Hallo Classic Barbershop ${LOC_NAME[s.loc]}! 💈 Ik wil graag een afspraak maken.`,
-      ``,
-      `• Naam: ${s.name}`,
-      `• Dienst: ${s.service}`,
-      `• Wanneer: ${s.dayLabel} om ${s.time}`,
-      `• Locatie: ${LOC_LABEL[s.loc]}`,
-      s.note ? `• Opmerking: ${s.note}` : null,
-      ``,
-      `Past dat?`,
-    ].filter(l => l !== null).join("\n");
-
-    window.open(`https://wa.me/${PHONES[s.loc]}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
-  });
+  render();
 
   // ---------- Lightbox ----------
   const items = $$(".gallery__item");

@@ -475,3 +475,41 @@ body::after {
 .menu__cat small { font-size: 10px; letter-spacing: .14em; color: var(--muted); }
 .footer .social + .social { margin-top: 10px; }
 .footer .social { display: flex; }
+
+/* ---- Boekingsflow in stappen (zoals op de site van Classic Barbershop) ---- */
+.bstep__head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.bstep__count { font-size: 12px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+.bstep__title { font-family: var(--serif); font-size: clamp(24px, 3vw, 30px); font-weight: 600; color: var(--text); }
+.bstep__bar { height: 3px; border-radius: 3px; background: var(--line-2); overflow: hidden; margin-bottom: 26px; }
+.bstep__bar span { display: block; height: 100%; width: 16%; background: var(--gold-grad); border-radius: 3px; transition: width .6s var(--ease); }
+.bstep__body { animation: bstepIn .45s var(--ease); }
+@keyframes bstepIn { from { opacity: 0; transform: translateX(18px); } }
+.choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.choices--list { grid-template-columns: 1fr; }
+.choice { all: unset; box-sizing: border-box; display: grid; gap: 2px; padding: 16px 18px; border-radius: 14px; border: 1px solid var(--line-2); background: rgba(255,255,255,.02); cursor: pointer; font-weight: 600; transition: border-color .3s, background .3s, transform .3s var(--ease); }
+.choice:hover { border-color: rgba(212,175,106,.5); transform: translateY(-2px); }
+.choice:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.choice.is-active { border-color: var(--gold); background: rgba(212,175,106,.08); }
+.choice small { font-weight: 500; font-size: 12.5px; color: var(--muted); }
+.choice--row { grid-template-columns: 1fr auto; align-items: center; }
+.choice--row b { font-family: var(--serif); font-size: 22px; font-weight: 600; background: var(--gold-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.choice__ico { font-size: 22px; margin-bottom: 4px; }
+.bfields { display: grid; gap: 16px; }
+.bstep__sub { font-size: 12px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); margin: 22px 0 12px; }
+.bstep__sub:first-child { margin-top: 0; }
+.bnav { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 26px; }
+.bnav__back { all: unset; cursor: pointer; color: var(--muted); font-weight: 600; font-size: 14.5px; padding: 10px 0; transition: color .3s; }
+.bnav__back:hover { color: var(--text); }
+.bnav__back:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 6px; }
+.bnav .btn { flex: 0 1 auto; }
+.bsum { list-style: none; padding: 0; margin: 0 0 18px; border-top: 1px solid var(--line-2); }
+.bsum li { display: flex; justify-content: space-between; gap: 16px; padding: 13px 0; border-bottom: 1px solid var(--line-2); font-size: 15px; }
+.bsum li span { color: var(--muted); }
+.bsum li strong { text-align: right; }
+.bsum li.bsum__total strong { font-family: var(--serif); font-size: 22px; background: var(--gold-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.bnote { font-size: 13px; color: var(--muted); margin: 0 0 6px; }
+.bdone { text-align: center; padding: 10px 0; }
+.bdone__ico { width: 64px; height: 64px; margin: 0 auto 14px; border-radius: 50%; display: grid; place-items: center; background: var(--gold-grad); color: #1a1408; font-size: 28px; font-weight: 700; }
+@media (max-width: 560px) { .choices { grid-template-columns: 1fr; } .bnav { flex-wrap: wrap; } }
+
+.checks li::before { flex: none; }

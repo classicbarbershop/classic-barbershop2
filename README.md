@@ -9,13 +9,13 @@ Website voor Classic Barbershop, met **exact de opbouw, lettertypes en kleuren v
 - Instagram Haacht @classic_barbershop_by_ali · Instagram Wilsele @classic.barbershop.wilsele · Facebook Wilsele
 
 ## Boeken
-Formulier zoals bij Sam: vestiging, dienst, dag (14 dagen), tijdstip, naam. De tijdsloten volgen de uren van de gekozen vestiging en de duur van de behandeling. De aanvraag gaat via WhatsApp naar die vestiging.
+Stappen zoals op de eigen site van de eigenaar: vestiging → categorie (Heren / Kinderen / Dames) → dienst → gegevens (naam, telefoon, e-mail) → datum & tijd → overzicht → bevestigen. De tijdsloten volgen de uren van de gekozen vestiging en de duur van de behandeling. Online prijs = prijs + €5. De aanvraag gaat via WhatsApp naar die vestiging.
 
 **Nog te doen (wens van de eigenaar):** een echt afsprakensysteem met beschikbaarheid en een beheerpaneel. Zijn eigen site gebruikt daarvoor Firebase (collectie `bookings`, admin bevestigt/annuleert).
 
 ## Aanpassen
 - Uren en telefoonnummers: bovenaan `script.js` (`HOURS`, `PHONES`)
-- Prijzen: `index.html` (sectie Diensten) en de keuzelijst in het boekingsformulier
+- Prijzen: `index.html` (sectie Diensten) en `SERVICES` in `script.js` (boekingsstappen)
 
 ## Foto's
-Afkomstig van Google Maps en de Instagram-pagina's van beide vestigingen (`img/raw/`). Vraag de eigenaar om originelen in hoge resolutie.
+Alleen foto's die aantoonbaar van Classic Barbershop zijn: posts van hun eigen Instagram-accounts (Haacht en Wilsele) of foto's waarop hun logo, gevel of uithangbord te zien is. Google Maps-foto's zonder herkenbaar logo zijn bewust weggelaten (daar zitten foto's van andere zaken tussen). Vraag de eigenaar om originelen in hoge resolutie.
