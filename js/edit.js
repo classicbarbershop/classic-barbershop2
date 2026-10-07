@@ -1,6 +1,6 @@
 // Bewerkmodus voor de eigenaar (rol: admin). Wordt alleen geladen na inloggen.
-import { $, $$, esc, fmt, clone, uid, sanitize, compressImage, toast, errText, DAY_NAMES } from "./core.js?v=202610071443";
-import { api } from "./api.js?v=202610071443";
+import { $, $$, esc, fmt, clone, uid, sanitize, compressImage, toast, errText, ask, DAY_NAMES } from "./core.js?v=202610071502";
+import { api } from "./api.js?v=202610071502";
 
 const KEY_LABEL = { texts: "teksten", images: "foto's", services: "prijzen", gallery: "galerij", hours: "openingsuren", settings: "instellingen", locations: "vestigingen" };
 
@@ -74,7 +74,7 @@ export function startEditor({ getContent, setContent }) {
   addEventListener("beforeunload", e => { if (dirty.size) { e.preventDefault(); e.returnValue = ""; } });
 
   $("[data-logout]", bar).addEventListener("click", async () => {
-    if (dirty.size && !confirm("Je hebt nog niet-opgeslagen wijzigingen. Toch uitloggen?")) return;
+    if (dirty.size && !(await ask("Je hebt nog niet-opgeslagen wijzigingen. Toch uitloggen?", { ok: "Uitloggen" }))) return;
     dirty.clear();
     await api.signOut();
     location.href = location.pathname;
@@ -240,7 +240,7 @@ export function startEditor({ getContent, setContent }) {
     if (act === "down" && i < list.length - 1) [list[i + 1], list[i]] = [list[i], list[i + 1]];
     if (act === "del") {
       const what = path === "services" ? `de categorie "${list[i].label}" met al haar behandelingen` : "dit item";
-      if (!confirm(`Ben je zeker dat je ${what} wil verwijderen?`)) return;
+      if (!(await ask(`Ben je zeker dat je ${what} wil verwijderen?`, { ok: "Verwijderen", danger: true }))) return;
       list.splice(i, 1);
     }
     if (act === "add-item") list.push({ id: uid("d-"), name: "Nieuwe behandeling", min: 30, price: 20, desc: "" });
@@ -496,13 +496,13 @@ export function startEditor({ getContent, setContent }) {
 
   async function deleteLocation(i, btn) {
     const l = draft.locations[i];
-    if (!confirm(`Vestiging ${l.name} verwijderen? Ze verdwijnt van de website en de agenda-login wordt verwijderd.`)) return;
+    if (!(await ask(`Vestiging ${l.name} verwijderen? Ze verdwijnt van de website en de agenda-login wordt verwijderd.`, { ok: "Verwijderen", danger: true }))) return;
     busy(btn, true, "Verwijderen…");
     try {
       try { await api.manageLocation("delete", { loc: l.id }); }
       catch (e) {
         if (e.message !== "heeft_afspraken") throw e;
-        if (!confirm(`Er staan nog ${e.count} komende afspraken bij ${l.name}. Toch verwijderen? Bel die klanten dan zelf even op.`)) { busy(btn, false); return; }
+        if (!(await ask(`Er staan nog ${e.count} komende afspraken bij ${l.name}. Toch verwijderen? Bel die klanten dan zelf even op.`, { ok: "Toch verwijderen", danger: true }))) { busy(btn, false); return; }
         await api.manageLocation("delete", { loc: l.id, force: true });
       }
     } catch (e) { busy(btn, false); return toast(errText(e), "bad"); }

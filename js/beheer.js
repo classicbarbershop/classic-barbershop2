@@ -1,9 +1,9 @@
 // Agenda en afsprakenbeheer per vestiging (rol = vestiging-id, bv. "haacht")
 import {
   $, $$, esc, fmt, euro, pad, toast, errText, DAY_SHORT, MONTHS, brusselsNow, brusselsToDate, inBrussels,
-  addDays, dowOf, dayLabel, hoursFor,
-} from "./core.js?v=202610071443";
-import { api, loadContent } from "./api.js?v=202610071443";
+  addDays, dowOf, dayLabel, hoursFor, ask
+} from "./core.js?v=202610071502";
+import { api, loadContent } from "./api.js?v=202610071502";
 
 const STATUS = {
   bevestigd: { label: "Bevestigd", cls: "s-ok" },
@@ -526,7 +526,7 @@ function wireUi() {
     }
     if (t.dataset.cancel) {
       const b = findBooking(t.dataset.cancel);
-      if (!confirm(`Afspraak van ${b.name} annuleren? Het tijdslot komt weer vrij op de website.`)) return;
+      if (!(await ask(`Afspraak van ${b.name} annuleren? Het tijdslot komt weer vrij op de website.`, { ok: "Annuleren", cancel: "Terug", danger: true }))) return;
       if (await changeStatus(b.id, "geannuleerd", "Afspraak geannuleerd. Het tijdslot is weer vrij.")) {
         const wa = waNumber(b.phone);
         if (wa.length >= 10) {

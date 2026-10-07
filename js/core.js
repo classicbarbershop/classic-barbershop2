@@ -125,6 +125,32 @@ export async function compressImage(file, max = 1800, quality = 0.85) {
   } finally { URL.revokeObjectURL(url); }
 }
 
+// ---------- Bevestigen (eigen venster i.p.v. confirm(), dat sommige browsers blokkeren) ----------
+export function ask(message, { ok = "Ja, doorgaan", cancel = "Annuleren", danger = false } = {}) {
+  return new Promise(resolve => {
+    const prev = document.activeElement;
+    const wrap = document.createElement("div");
+    wrap.className = "ask";
+    wrap.innerHTML = `<div class="ask__box" role="alertdialog" aria-modal="true">
+        <p class="ask__msg"></p>
+        <div class="ask__btns">
+          <button type="button" class="ask__btn" data-no></button>
+          <button type="button" class="ask__btn ask__btn--ok${danger ? " ask__btn--danger" : ""}" data-yes></button>
+        </div></div>`;
+    $(".ask__msg", wrap).textContent = message;
+    $("[data-no]", wrap).textContent = cancel;
+    $("[data-yes]", wrap).textContent = ok;
+    const done = v => { removeEventListener("keydown", key, true); wrap.remove(); prev?.focus?.(); resolve(v); };
+    const key = e => { if (e.key === "Escape") { e.stopPropagation(); done(false); } };
+    $("[data-no]", wrap).addEventListener("click", () => done(false));
+    $("[data-yes]", wrap).addEventListener("click", () => done(true));
+    wrap.addEventListener("click", e => { if (e.target === wrap) done(false); });
+    addEventListener("keydown", key, true);
+    document.body.append(wrap);
+    $("[data-yes]", wrap).focus();
+  });
+}
+
 // ---------- Melding onderaan ----------
 export function toast(msg, kind = "") {
   let box = $("#toasts");

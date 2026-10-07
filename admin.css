@@ -341,3 +341,14 @@ body.legal { padding: 48px 0 80px; }
 .walkin { display: inline-flex; align-items: center; gap: 10px; margin: 22px 0 0; padding: 9px 16px 9px 12px; border-radius: 999px; border: 1px solid var(--line); background: rgba(212,175,106,.07); color: var(--gold-2); font-size: 14.5px; font-weight: 600; }
 .walkin::before { content: "✓"; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--gold-grad); color: #1a1408; font-size: 12px; font-weight: 800; }
 .walkin + .rating { margin-top: 22px; }
+
+/* ---------- eigen bevestigingsvenster ---------- */
+.ask { position: fixed; inset: 0; z-index: 600; display: grid; place-items: center; padding: 16px; background: rgba(8,8,8,.55); backdrop-filter: blur(4px); animation: askIn .2s ease; }
+.ask__box { width: min(420px, 100%); padding: 24px; border-radius: 18px; background: #161616; color: #f4f1ea; border: 1px solid rgba(255,255,255,.12); box-shadow: 0 40px 80px -30px #000; font-family: var(--sans); }
+.ask__msg { margin: 0 0 20px; font-size: 16px; line-height: 1.5; }
+.ask__btns { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+.ask__btn { height: 44px; padding: 0 18px; border-radius: 999px; border: 1px solid rgba(255,255,255,.25); color: #f4f1ea; font-weight: 600; font-size: 14.5px; }
+.ask__btn:hover { border-color: #fff; }
+.ask__btn--ok { background: #fff; color: #111; border-color: #fff; }
+.ask__btn--danger { background: #c4462f; color: #fff; border-color: #c4462f; }
+@keyframes askIn { from { opacity: 0; } }
