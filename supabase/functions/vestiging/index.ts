@@ -22,15 +22,18 @@ Deno.serve(async (req) => {
 
   try {
     const url = Deno.env.get("SUPABASE_URL")!;
-    const service = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ??
-      JSON.parse(Deno.env.get("SUPABASE_SECRET_KEYS") ?? "{}").default;
+    let secrets: Record<string, string> = {};
+    try { secrets = JSON.parse(Deno.env.get("SUPABASE_SECRET_KEYS") ?? "{}"); } catch { /* geen nieuwe sleutels */ }
+    const service = secrets.default ?? Object.values(secrets)[0] ?? Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!service) return json(500, { error: "serverfout", detail: "geen service-sleutel" });
     const sb = createClient(url, service, { auth: { persistSession: false, autoRefreshToken: false } });
 
     // wie vraagt dit?
     const token = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "");
     const { data: who, error: whoErr } = await sb.auth.getUser(token);
     if (whoErr || !who?.user) return json(401, { error: "niet_ingelogd" });
-    const { data: me } = await sb.from("staff").select("site, role").eq("user_id", who.user.id).maybeSingle();
+    const { data: me, error: meErr } = await sb.from("staff").select("site, role").eq("user_id", who.user.id).maybeSingle();
+    if (meErr) return json(500, { error: "serverfout", detail: meErr.message });
     if (!me || me.role !== "admin") return json(403, { error: "geen_toegang" });
     const site = me.site as string;
 

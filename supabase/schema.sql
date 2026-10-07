@@ -274,6 +274,12 @@ grant select on public.staff to authenticated;
 grant select on public.site_content to anon, authenticated;
 grant insert, update, delete on public.site_content to authenticated;
 grant select, update on public.bookings to authenticated;
+-- de serverfunctie (Edge Function "vestiging") werkt met de service-rol
+do $$ begin
+  if exists (select 1 from pg_roles where rolname = 'service_role') then
+    grant all on public.staff, public.site_content, public.bookings to service_role;
+  end if;
+end $$;
 
 -- Wie mag wat uitvoeren
 revoke all on function public._setting(text, text) from public, anon, authenticated;
