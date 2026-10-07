@@ -1,0 +1,130 @@
+/* =========================================================
+   Licht thema (wens van de eigenaar): wit als basis, zwart als
+   tweede kleur, goud alleen als subtiel accent.
+   Laadt als laatste, na styles.css en admin.css.
+   ========================================================= */
+:root {
+  --bg: #ffffff;
+  --bg-2: #f7f5f0;
+  --bg-3: #ece8df;
+  --line: rgba(17, 17, 17, .14);
+  --line-2: rgba(17, 17, 17, .08);
+  --text: #141414;
+  --muted: #5e5950;
+  --gold: #8f6f33;
+  --gold-2: #7a5c25;
+  --gold-3: #b08d4c;
+  --gold-grad: linear-gradient(115deg, #7a5c25 0%, #b8954f 48%, #94733a 100%);
+  --ink: #111111;
+  --ghost: rgba(17, 17, 17, .28);
+  color-scheme: light;
+}
+
+/* zwarte blokken: lopende band, CTA, footer + lightbox, en de bewerkmodus/meldingen */
+.marquee, .cta, .footer, .lightbox, .ed-bar, .ed-panel, .ed-photo, #toasts {
+  --bg: #0d0d0d;
+  --bg-2: #161616;
+  --bg-3: #202020;
+  --line: rgba(255, 255, 255, .14);
+  --line-2: rgba(255, 255, 255, .08);
+  --text: #f4f1ea;
+  --muted: #a8a299;
+  --gold: #c9a865;
+  --gold-2: #e2c88f;
+  --gold-grad: linear-gradient(115deg, #a8823f 0%, #e6cd94 40%, #c9a865 62%, #8f6c30 100%);
+  --ghost: rgba(255, 255, 255, .3);
+  color-scheme: dark;
+  color: var(--text);
+}
+
+body::after { display: none; }                       /* geen filmkorrel op wit */
+::selection { background: var(--ink); color: #fff; }
+
+/* ---------- knoppen: zwart, goud alleen bij hover ---------- */
+.btn--gold {
+  background: var(--ink); color: #fff;
+  box-shadow: 0 12px 28px -14px rgba(0,0,0,.45);
+}
+.btn--gold:hover { background: #000; box-shadow: 0 16px 34px -14px rgba(0,0,0,.55), inset 0 -2px 0 var(--gold-3); }
+.btn--ghost { border-color: var(--ghost); color: var(--text); }
+.btn--ghost:hover { border-color: var(--text); color: var(--text); }
+/* in de zwarte blokken een witte hoofdknop */
+.cta .btn--gold, .footer .btn--gold { background: #fff; color: var(--ink); }
+.cta .btn--gold:hover, .footer .btn--gold:hover { background: #fff; box-shadow: inset 0 -2px 0 var(--gold); }
+.btn:disabled { opacity: .55; }
+
+/* ---------- logo: zwart op wit, goud in de zwarte footer ---------- */
+.brand__logo { filter: none; }
+
+/* ---------- nav & menu ---------- */
+.nav.scrolled { background: rgba(255,255,255,.92); border-color: var(--line-2); box-shadow: 0 8px 30px -22px rgba(0,0,0,.35); }
+.nav__links a { color: rgba(17,17,17,.68); }
+.nav__links a:hover { color: var(--ink); }
+.drawer { background: rgba(255,255,255,.98); }
+.mbar { background: rgba(255,255,255,.94) !important; box-shadow: 0 14px 40px -18px rgba(0,0,0,.35); }
+.mbar__call { color: var(--ink) !important; }
+
+/* ---------- hero ---------- */
+.hex { opacity: .09; }
+.hex--faint { opacity: .05; }
+.hero__glow { background: radial-gradient(circle, rgba(184,149,79,.10), transparent 62%); }
+.card { box-shadow: 0 30px 60px -28px rgba(0,0,0,.45), 0 0 0 1px rgba(0,0,0,.06); }
+.card::after { background: linear-gradient(180deg, transparent 65%, rgba(0,0,0,.25)); }
+.badge-open { background: rgba(255,255,255,.9); color: var(--ink); box-shadow: 0 12px 30px -16px rgba(0,0,0,.35); }
+.rating { background: #fff; }
+.rating:hover { border-color: var(--line); background: var(--bg-2); }
+.rating__score { background: var(--ink); color: #fff; }
+.scroll-hint { border-color: rgba(17,17,17,.25); }
+.walkin { background: #fff; color: var(--ink); border-color: var(--line); box-shadow: 0 8px 22px -16px rgba(0,0,0,.3); }
+.walkin::before { background: var(--ink); color: #fff; }
+
+/* ---------- secties ---------- */
+.about__media-sm { box-shadow: 0 26px 50px -24px rgba(0,0,0,.45); }
+.menu__col { background: #fff; box-shadow: 0 20px 50px -40px rgba(0,0,0,.35); }
+.menu__row i { border-bottom-color: rgba(17,17,17,.18); }
+.menu__row b { color: var(--ink); }
+.menu__featured .menu__row span { color: var(--ink); }
+.tag { background: transparent; color: var(--gold); border: 1px solid rgba(143,111,51,.45); }
+.gallery__item span { color: #fff; }
+.gallery__item:hover span { color: #fff; }
+.gallery__item::after { background: linear-gradient(180deg, transparent 55%, rgba(0,0,0,.7)); }
+.quote { background: #fff; box-shadow: 0 18px 40px -34px rgba(0,0,0,.35); }
+.avatar { background: var(--bg-2); color: var(--ink); }
+.loc { background: #fff; box-shadow: 0 20px 50px -40px rgba(0,0,0,.35); }
+.loc__map iframe { filter: grayscale(1) contrast(1.02); }
+.checks li::before { color: var(--ink); }
+.checks a { color: var(--ink); border-bottom-color: rgba(17,17,17,.35); }
+
+/* ---------- boeken ---------- */
+.book { background: #fff; box-shadow: 0 40px 80px -50px rgba(0,0,0,.4); }
+.book__err { color: #b23a2a; }
+.field input, .book select { background: #fff; border-color: var(--line); }
+.field input::placeholder { color: #9b958b; }
+.choice { background: #fff; border-color: var(--line); }
+.choice:hover { border-color: var(--ink); }
+.choice.is-active { border-color: var(--ink); background: var(--bg-2); }
+.choice--row b, .bsum li.bsum__total strong { background: none; -webkit-background-clip: border-box; background-clip: border-box; color: var(--ink); }
+.days span, .slots span { border-color: var(--line); background: #fff; }
+.days input:checked + span, .slots input:checked + span { background: var(--ink); color: #fff; border-color: var(--ink); }
+.days input:checked + span small, .days input:checked + span em { color: rgba(255,255,255,.75); }
+.slots span:hover { border-color: var(--ink); }
+.bstep__bar span { background: var(--ink); }
+.bdone__ico { background: var(--ink); color: #fff; }
+.bdone .bnote a { color: var(--ink); border-bottom-color: rgba(17,17,17,.35); }
+
+/* ---------- zwarte blokken ---------- */
+.marquee { background: var(--bg); border-color: var(--bg); }
+.cta { background: var(--bg); }
+.cta__bg::after { background: radial-gradient(ellipse at center, rgba(13,13,13,.72), rgba(13,13,13,.94) 70%); }
+.footer { background: var(--bg); border-top: 0; }
+.footer .brand__logo { filter: none; }
+.lightbox { background: rgba(8,8,8,.95); }
+.lightbox__nav:hover, .lightbox__close:hover { background: #fff; color: var(--ink); }
+
+/* ---------- login & privacy ---------- */
+.auth__card { background: #fff; box-shadow: 0 40px 90px -50px rgba(0,0,0,.4); }
+.auth__demo { color: var(--gold-2); }
+.pw__toggle { color: var(--ink); }
+.legal p { color: #3a3732; }
+.legal h2 { color: var(--ink); }
+.legal a:not(.btn):not(.brand) { color: var(--ink); border-bottom-color: rgba(17,17,17,.35); }
