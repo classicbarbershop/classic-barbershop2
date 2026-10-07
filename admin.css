@@ -300,3 +300,13 @@ body.bh::after { display: none; }
 }
 
 [hidden] { display: none !important; }
+
+/* ---------- privacyverklaring ---------- */
+body.legal { padding: 48px 0 80px; }
+.legal__in { max-width: 760px; }
+.legal h1 { font-family: var(--serif); font-size: clamp(36px, 6vw, 52px); font-weight: 600; margin: 28px 0 4px; }
+.legal h2 { font-family: var(--serif); font-size: 26px; font-weight: 600; margin: 34px 0 8px; color: var(--gold-2); }
+.legal p { color: #d9d1c3; }
+.legal a:not(.btn):not(.brand) { color: var(--gold); border-bottom: 1px solid rgba(212,175,106,.4); }
+.footer__privacy { color: var(--muted); font-size: 13px; }
+.footer__privacy:hover { color: var(--gold-2); }

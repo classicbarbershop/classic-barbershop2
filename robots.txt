@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /classic-barbershop2/login.html
+Disallow: /classic-barbershop2/beheer.html
+Disallow: /login.html
+Disallow: /beheer.html
+
+Sitemap: https://mohamad3088.github.io/classic-barbershop2/sitemap.xml

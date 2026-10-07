@@ -147,6 +147,7 @@ declare
   v_slot     int := coalesce((v_settings ->> 'slot_min')::int, 30);
   v_fee      numeric := coalesce((v_settings ->> 'online_fee')::numeric, 0);
   v_maxdays  int := coalesce((v_settings ->> 'max_days')::int, 14);
+  v_notice   int := coalesce((v_settings ->> 'min_notice')::int, 30);
   v_min      int;
   v_dur      int;
   v_end      timestamptz;
@@ -179,7 +180,7 @@ begin
   v_end := p_start + make_interval(mins => v_dur);
 
   -- tijd
-  if p_start < now() + interval '10 minutes' then raise exception 'tijd_voorbij'; end if;
+  if p_start < now() + make_interval(mins => v_notice) then raise exception 'tijd_voorbij'; end if;
   if v_local::date > v_today + v_maxdays then raise exception 'te_ver_vooruit'; end if;
   v_day := public._setting(p_site, 'hours') -> p_loc -> extract(dow from v_local)::int::text;
   if v_day is null or jsonb_typeof(v_day) <> 'array' then raise exception 'gesloten'; end if;
@@ -304,3 +305,12 @@ create policy "fotos_wijzigen" on storage.objects for update to authenticated
   using (bucket_id = 'site' and (storage.foldername(name))[1] = public.my_site() and public.my_role() = 'admin');
 create policy "fotos_verwijderen" on storage.objects for delete to authenticated
   using (bucket_id = 'site' and (storage.foldername(name))[1] = public.my_site() and public.my_role() = 'admin');
+
+-- ---------- Privacy: afspraken 2 jaar na datum automatisch verwijderen (elke nacht 03:00) ----------
+do $$ begin
+  create extension if not exists pg_cron;
+  perform cron.unschedule(jobid) from cron.job where jobname = 'afspraken-opruimen';
+  perform cron.schedule('afspraken-opruimen', '0 3 * * *',
+    $job$ delete from public.bookings where ends_at < now() - interval '2 years' $job$);
+exception when others then raise notice 'pg_cron niet beschikbaar: %', sqlerrm;
+end $$;

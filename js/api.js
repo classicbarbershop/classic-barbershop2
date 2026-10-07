@@ -17,8 +17,15 @@ const fail = code => { throw new Error(code); };
 // =====================================================================
 let sbPromise = null;
 function sb() {
-  sbPromise ??= import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm")
-    .then(m => m.createClient(CFG.supabaseUrl, CFG.supabaseKey, {
+  // vaste versie, in de site zelf (geen afhankelijkheid van een externe CDN)
+  sbPromise ??= new Promise((ok, ko) => {
+    if (window.supabase?.createClient) return ok(window.supabase);
+    const s = document.createElement("script");
+    s.src = new URL("./vendor/supabase-2.117.2.js", import.meta.url).href;
+    s.onload = () => ok(window.supabase);
+    s.onerror = () => ko(new Error("offline"));
+    document.head.append(s);
+  }).then(m => m.createClient(CFG.supabaseUrl, CFG.supabaseKey, {
       auth: { persistSession: true, autoRefreshToken: true, storageKey: `salon-auth-${SITE}` },
     }));
   return sbPromise;
@@ -40,6 +47,15 @@ const supabaseApi = {
     const path = `${SITE}/${uid()}.jpg`;
     check(await c.storage.from("site").upload(path, blob, { contentType: "image/jpeg", cacheControl: "31536000", upsert: false }));
     return c.storage.from("site").getPublicUrl(path).data.publicUrl;
+  },
+  async deleteImage(url) {
+    const c = await sb();
+    const marker = "/storage/v1/object/public/site/";
+    const i = url.indexOf(marker);
+    if (i < 0) return;
+    const path = decodeURIComponent(url.slice(i + marker.length));
+    if (!path.startsWith(`${SITE}/`)) return;
+    await c.storage.from("site").remove([path]);
   },
   async getBusy(loc, from, to) {
     const c = await sb();
@@ -130,6 +146,7 @@ const demoApi = {
     await delay();
     return await new Promise(ok => { const r = new FileReader(); r.onload = () => ok(r.result); r.readAsDataURL(blob); });
   },
+  async deleteImage() {},
   async getBusy(loc, from, to) { await delay(200); return demoBusy(loc, from, to); },
   async createBooking(b) {
     await delay(400);
@@ -143,7 +160,7 @@ const demoApi = {
     for (const ct of c.services) for (const it of ct.items) if (it.id === b.serviceId) { cat = ct; item = it; }
     if (!item) fail("onbekende_dienst");
     const start = new Date(b.start), end = new Date(+start + item.min * 60000);
-    if (+start < Date.now() + 10 * 60000) fail("tijd_voorbij");
+    if (+start < Date.now() + (c.settings.min_notice ?? 30) * 60000) fail("tijd_voorbij");
     const local = inBrussels(start);
     if (local.iso > addDays(todayISO(), c.settings.max_days ?? 14)) fail("te_ver_vooruit");
     const h = hoursFor(c.hours, b.loc, local.dow);

@@ -200,7 +200,7 @@ function slotsFor(iso) {
   const out = [];
   for (let m = h[0]; m + book.svc.min <= h[1]; m += slotMin()) {
     const s = +brusselsToDate(iso, m), e = s + book.svc.min * 60000;
-    const past = s < now + 15 * 60000;
+    const past = s < now + (Number(C.settings.min_notice) || 0) * 60000;
     const taken = !past && !isFree(busy, s, e, chairs);
     out.push({ m, past, taken, ok: !past && !taken });
   }
@@ -239,7 +239,7 @@ function renderBook() {
         <label class="field"><span>E-mail</span><input type="email" id="bEmail" autocomplete="email" maxlength="120" placeholder="naam@voorbeeld.be" value="${esc(book.email || "")}"></label>
         <label class="field"><span>Opmerking <small>(optioneel)</small></span><input type="text" id="bNote" maxlength="300" placeholder="bv. graag bij een bepaalde kapper" value="${esc(book.note || "")}"></label>
       </div>
-      <p class="bnote" style="margin-top:14px">Je gegevens worden enkel gebruikt voor je afspraak.</p>
+      <p class="bnote" style="margin-top:14px">Je gegevens worden enkel gebruikt voor je afspraak. <a href="privacy.html" target="_blank" style="color:var(--gold)">Privacy</a></p>
       <div class="bnav">${backBtn}<button type="button" class="btn btn--gold" data-next>Volgende</button></div>`;
   }
   if (book.step === 4) {
@@ -486,6 +486,13 @@ setInterval(renderStatus, 60_000);
 loadContent().then(async c => {
   C = c;
   renderAll();
+  // directe link per vestiging, bv. index.html?vestiging=haacht (voor het Google-profiel)
+  const want = new URLSearchParams(location.search).get("vestiging");
+  if (want && locById(want.toLowerCase())) {
+    book.loc = want.toLowerCase();
+    go(1);
+    setTimeout(() => $("#boeken").scrollIntoView({ behavior: "smooth" }), 300);
+  }
   // ingelogd?
   const me = await api.session().catch(() => null);
   const link = $("#loginLink");

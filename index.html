@@ -8,7 +8,11 @@
   <meta name="theme-color" content="#0a0907">
   <meta property="og:title" content="Classic Barbershop — Haacht &amp; Wilsele">
   <meta property="og:description" content="Gentlemen's cut and shave. Twee vestigingen, elke dag open. Boek je plek online.">
-  <meta property="og:image" content="img/haacht-gevel.jpg">
+  <meta property="og:image" content="https://mohamad3088.github.io/classic-barbershop2/img/haacht-gevel.jpg">
+  <meta property="og:url" content="https://mohamad3088.github.io/classic-barbershop2/">
+  <meta property="og:locale" content="nl_BE">
+  <link rel="canonical" href="https://mohamad3088.github.io/classic-barbershop2/">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
   <meta property="og:type" content="website">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0907'/%3E%3Ctext x='50%25' y='58%25' text-anchor='middle' dominant-baseline='middle' font-family='Georgia,serif' font-style='italic' font-size='40' fill='%23d4af6a'%3EC%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,18 +22,123 @@
   <link rel="stylesheet" href="admin.css">
 
   <script type="application/ld+json">
-  [
-    {"@context":"https://schema.org","@type":"BarberShop","name":"Classic Barbershop Haacht","image":"img/haacht-gevel.jpg","telephone":"+32470513916",
-     "address":{"@type":"PostalAddress","streetAddress":"Vekestraat 1","postalCode":"3150","addressLocality":"Haacht","addressCountry":"BE"},
-     "geo":{"@type":"GeoCoordinates","latitude":50.9762436,"longitude":4.6373918},
-     "aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","reviewCount":"252"},
-     "sameAs":["https://www.instagram.com/classic_barbershop_by_ali"]},
-    {"@context":"https://schema.org","@type":"BarberShop","name":"Classic Barbershop Wilsele","image":"img/balie-neon.jpg","telephone":"+32492860437",
-     "address":{"@type":"PostalAddress","streetAddress":"Aarschotsesteenweg 664","postalCode":"3012","addressLocality":"Wilsele","addressCountry":"BE"},
-     "geo":{"@type":"GeoCoordinates","latitude":50.9253996,"longitude":4.7220358},
-     "aggregateRating":{"@type":"AggregateRating","ratingValue":"4.9","reviewCount":"57"},
-     "sameAs":["https://www.instagram.com/classic.barbershop.wilsele","https://www.facebook.com/share/181LqiH1g5/"]}
+[
+ {
+  "@context": "https://schema.org",
+  "@type": "BarberShop",
+  "name": "Classic Barbershop Haacht",
+  "url": "https://mohamad3088.github.io/classic-barbershop2/",
+  "image": "https://mohamad3088.github.io/classic-barbershop2/img/haacht-gevel.jpg",
+  "logo": "https://mohamad3088.github.io/classic-barbershop2/img/icon-512.png",
+  "telephone": "+32470513916",
+  "priceRange": "€15–€50",
+  "address": {
+   "@type": "PostalAddress",
+   "streetAddress": "Vekestraat 1",
+   "postalCode": "3150",
+   "addressLocality": "Haacht",
+   "addressCountry": "BE"
+  },
+  "geo": {
+   "@type": "GeoCoordinates",
+   "latitude": 50.9762436,
+   "longitude": 4.6373918
+  },
+  "openingHoursSpecification": [
+   {
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": [
+     "https://schema.org/Sunday",
+     "https://schema.org/Monday",
+     "https://schema.org/Saturday"
+    ],
+    "opens": "09:00",
+    "closes": "18:00"
+   },
+   {
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": [
+     "https://schema.org/Tuesday",
+     "https://schema.org/Wednesday",
+     "https://schema.org/Thursday",
+     "https://schema.org/Friday"
+    ],
+    "opens": "09:00",
+    "closes": "19:00"
+   }
+  ],
+  "aggregateRating": {
+   "@type": "AggregateRating",
+   "ratingValue": "4.8",
+   "reviewCount": "252"
+  },
+  "potentialAction": {
+   "@type": "ReserveAction",
+   "target": "https://mohamad3088.github.io/classic-barbershop2/?vestiging=haacht#boeken"
+  },
+  "sameAs": [
+   "https://www.instagram.com/classic_barbershop_by_ali"
   ]
+ },
+ {
+  "@context": "https://schema.org",
+  "@type": "BarberShop",
+  "name": "Classic Barbershop Wilsele",
+  "url": "https://mohamad3088.github.io/classic-barbershop2/",
+  "image": "https://mohamad3088.github.io/classic-barbershop2/img/balie-neon.jpg",
+  "logo": "https://mohamad3088.github.io/classic-barbershop2/img/icon-512.png",
+  "telephone": "+32492860437",
+  "priceRange": "€15–€50",
+  "address": {
+   "@type": "PostalAddress",
+   "streetAddress": "Aarschotsesteenweg 664",
+   "postalCode": "3012",
+   "addressLocality": "Wilsele",
+   "addressCountry": "BE"
+  },
+  "geo": {
+   "@type": "GeoCoordinates",
+   "latitude": 50.9253996,
+   "longitude": 4.7220358
+  },
+  "openingHoursSpecification": [
+   {
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": [
+     "https://schema.org/Sunday",
+     "https://schema.org/Saturday"
+    ],
+    "opens": "10:00",
+    "closes": "18:00"
+   },
+   {
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": [
+     "https://schema.org/Monday",
+     "https://schema.org/Tuesday",
+     "https://schema.org/Wednesday",
+     "https://schema.org/Thursday",
+     "https://schema.org/Friday"
+    ],
+    "opens": "10:00",
+    "closes": "19:00"
+   }
+  ],
+  "aggregateRating": {
+   "@type": "AggregateRating",
+   "ratingValue": "4.9",
+   "reviewCount": "57"
+  },
+  "potentialAction": {
+   "@type": "ReserveAction",
+   "target": "https://mohamad3088.github.io/classic-barbershop2/?vestiging=wilsele#boeken"
+  },
+  "sameAs": [
+   "https://www.instagram.com/classic.barbershop.wilsele",
+   "https://www.facebook.com/share/181LqiH1g5/"
+  ]
+ }
+]
   </script>
 </head>
 <body>
@@ -377,6 +486,7 @@
           Inloggen
         </a>
         <span>© <span id="year"></span> Classic Barbershop. Alle rechten voorbehouden.</span>
+        <a href="privacy.html" class="footer__privacy">Privacy</a>
       </span>
       <a href="#top">Naar boven ↑</a>
     </div>

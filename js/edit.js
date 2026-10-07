@@ -8,6 +8,12 @@ export function startEditor({ getContent, setContent }) {
   const draft = clone(getContent());
   const dirty = new Set();
 
+  // geüploade foto's in de opslag bijhouden, zodat vervangen foto's opgeruimd worden
+  const storedUrls = c => new Set([...Object.values(c.images || {}), ...(c.gallery || []).map(g => g.src)]
+    .filter(u => typeof u === "string" && u.includes("/storage/v1/object/public/site/")));
+  let savedUrls = storedUrls(draft);
+  const uploaded = new Set();
+
   document.body.classList.add("is-editing");
 
   // ---------- Werkbalk ----------
@@ -48,6 +54,11 @@ export function startEditor({ getContent, setContent }) {
         await api.saveContent(key, draft[key]);
         dirty.delete(key);
       }
+      // foto's die nergens meer gebruikt worden uit de opslag verwijderen
+      const now = storedUrls(draft);
+      for (const u of new Set([...savedUrls, ...uploaded])) if (!now.has(u)) api.deleteImage(u).catch(() => {});
+      savedUrls = now;
+      uploaded.clear();
       saveBtn.textContent = "Opgeslagen ✓";
       saveBtn.title = "";
       toast("Wijzigingen opgeslagen en live op de website.", "ok");
@@ -118,7 +129,9 @@ export function startEditor({ getContent, setContent }) {
     toast("Foto uploaden…");
     try {
       const blob = await compressImage(file);
-      return await api.uploadImage(blob);
+      const url = await api.uploadImage(blob);
+      uploaded.add(url);
+      return url;
     } catch (e) { toast(`Upload mislukt: ${errText(e)}`, "bad"); return null; }
   }
 
@@ -321,6 +334,8 @@ export function startEditor({ getContent, setContent }) {
             <label>Online toeslag (€)${numIn("settings.online_fee", draft.settings.online_fee ?? 0, 'min="0" max="50" step="0.5"')}</label>
             <label>Tijdsloten om de<select data-k="settings.slot_min" data-t="int">
               ${[15, 20, 30, 45, 60].map(m => `<option value="${m}" ${+draft.settings.slot_min === m ? "selected" : ""}>${m} minuten</option>`).join("")}</select></label>
+            <label>Minstens vooraf boeken<select data-k="settings.min_notice" data-t="int">
+              ${[0, 15, 30, 60, 120, 240, 720, 1440].map(m => `<option value="${m}" ${+(draft.settings.min_notice ?? 30) === m ? "selected" : ""}>${m === 0 ? "geen minimum" : m < 60 ? `${m} minuten` : m < 1440 ? `${m / 60} uur` : "1 dag"}</option>`).join("")}</select></label>
             <label>Hoeveel dagen vooruit boeken<select data-k="settings.max_days" data-t="int">
               ${[7, 14, 21, 30, 60].map(m => `<option value="${m}" ${+draft.settings.max_days === m ? "selected" : ""}>${m} dagen</option>`).join("")}</select></label>
           </div></section>

@@ -484,6 +484,20 @@ function wireUi() {
   $("#logoutBtn").addEventListener("click", async () => { await api.signOut(); location.replace("login.html"); });
   $("#exportBtn").addEventListener("click", exportCsv);
 
+  // agenda als app op het beginscherm
+  const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+  let installEvt = null;
+  addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; $("#installBtn").hidden = false; });
+  if (!standalone && /iphone|ipad|ipod/i.test(navigator.userAgent)) $("#installBtn").hidden = false;
+  $("#installBtn").addEventListener("click", async () => {
+    if (installEvt) { installEvt.prompt(); await installEvt.userChoice; installEvt = null; $("#installBtn").hidden = true; return; }
+    openModal("Agenda op je beginscherm", `<ol class="ed-help">
+      <li>Tik onderaan in Safari op <b>Deel</b> (vierkantje met pijl omhoog).</li>
+      <li>Kies <b>Zet op beginscherm</b> en tik op <b>Voeg toe</b>.</li>
+      <li>Open voortaan de agenda via het Classic-icoon.</li></ol>`);
+  });
+  addEventListener("appinstalled", () => { $("#installBtn").hidden = true; toast("Agenda staat op je beginscherm.", "ok"); });
+
   const nb = $("#notifyBtn");
   const syncNotify = () => nb.classList.toggle("is-on", "Notification" in window && Notification.permission === "granted");
   syncNotify();
