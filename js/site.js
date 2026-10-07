@@ -2,9 +2,9 @@
 import {
   $, $$, fmt, esc, euro, sanitize, DAY_NAMES, DAY_SHORT, MONTHS, brusselsNow, brusselsToDate,
   inBrussels, addDays, dowOf, dayLabel, hoursFor, isFree, errText,
-} from "./core.js";
-import { DEFAULTS } from "./defaults.js";
-import { api, MODE, loadContent } from "./api.js";
+} from "./core.js?v=202610071325";
+import { DEFAULTS } from "./defaults.js?v=202610071325";
+import { api, MODE, loadContent } from "./api.js?v=202610071325";
 
 let C = structuredClone(DEFAULTS); // huidige inhoud (standaard → database)
 const locById = id => C.locations.find(l => l.id === id);
@@ -535,7 +535,7 @@ loadContent().then(async c => {
   const link = $("#loginLink");
   if (me?.role === "admin") {
     link.lastChild.textContent = " Bewerkmodus";
-    const { startEditor } = await import("./edit.js");
+    const { startEditor } = await import("./edit.js?v=202610071325");
     startEditor({ getContent: () => C, setContent: v => { C = v; renderAll(); }, me });
   } else if (me) {
     link.href = "beheer.html";

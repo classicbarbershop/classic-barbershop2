@@ -1,6 +1,6 @@
 // Eén aanspreekpunt voor alle data: Supabase in productie, een lokale demo om te testen.
-import { DEFAULTS } from "./defaults.js";
-import { clone, uid, inBrussels, todayISO, addDays, hoursFor, isFree } from "./core.js";
+import { DEFAULTS } from "./defaults.js?v=202610071325";
+import { clone, uid, inBrussels, todayISO, addDays, hoursFor, isFree } from "./core.js?v=202610071325";
 
 const CFG = window.SITE_CONFIG || {};
 const SITE = CFG.site || "site";
