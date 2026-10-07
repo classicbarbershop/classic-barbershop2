@@ -14,7 +14,7 @@ export const DEFAULTS = {
     wilsele: { 0: H(10, 18), 1: H(10, 19), 2: H(10, 19), 3: H(10, 19), 4: H(10, 19), 5: H(10, 19), 6: H(10, 18) },
   },
 
-  settings: { online_fee: 5, slot_min: 30, max_days: 14, min_notice: 30 },
+  settings: { online_fee: 0, slot_min: 30, max_days: 14, min_notice: 30 },
 
   services: [
     { id: "heren", label: "Heren", sub: "", icon: "✂️", items: [

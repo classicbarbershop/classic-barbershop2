@@ -336,3 +336,8 @@ body.legal { padding: 48px 0 80px; }
 .bh-top .brand__logo { height: 46px; }
 .legal .brand__logo { height: 110px; }
 @media (max-width: 640px) { .brand__logo { height: 50px; } .nav.scrolled .brand__logo { height: 44px; } }
+
+/* ---------- met én zonder afspraak ---------- */
+.walkin { display: inline-flex; align-items: center; gap: 10px; margin: 22px 0 0; padding: 9px 16px 9px 12px; border-radius: 999px; border: 1px solid var(--line); background: rgba(212,175,106,.07); color: var(--gold-2); font-size: 14.5px; font-weight: 600; }
+.walkin::before { content: "✓"; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--gold-grad); color: #1a1408; font-size: 12px; font-weight: 800; }
+.walkin + .rating { margin-top: 22px; }

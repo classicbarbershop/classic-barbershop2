@@ -1,6 +1,6 @@
 // Eén aanspreekpunt voor alle data: Supabase in productie, een lokale demo om te testen.
-import { DEFAULTS } from "./defaults.js?v=202610071325";
-import { clone, uid, inBrussels, todayISO, addDays, hoursFor, isFree } from "./core.js?v=202610071325";
+import { DEFAULTS } from "./defaults.js?v=202610071409";
+import { clone, uid, inBrussels, todayISO, addDays, hoursFor, isFree } from "./core.js?v=202610071409";
 
 const CFG = window.SITE_CONFIG || {};
 const SITE = CFG.site || "site";
@@ -27,6 +27,8 @@ function sb() {
     document.head.append(s);
   }).then(m => m.createClient(CFG.supabaseUrl, CFG.supabaseKey, {
       auth: { persistSession: true, autoRefreshToken: true, storageKey: `salon-auth-${SITE}` },
+      // nooit uit de browsercache: altijd verse gegevens en geen verwarring tussen domeinen
+      global: { fetch: (url, opts = {}) => fetch(url, { ...opts, cache: "no-store" }) },
     }));
   return sbPromise;
 }
