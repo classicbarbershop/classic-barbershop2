@@ -25,6 +25,7 @@ export function startEditor({ getContent, setContent }) {
       <button type="button" data-panel="services">Prijzen</button>
       <button type="button" data-panel="gallery">Galerij</button>
       <button type="button" data-panel="hours">Openingsuren</button>
+      <button type="button" data-panel="locations">Vestigingen</button>
       <button type="button" data-panel="settings">Instellingen</button>
       <button type="button" data-help>Hulp</button>
     </div>
@@ -196,7 +197,8 @@ export function startEditor({ getContent, setContent }) {
   function closePanel() { panel.classList.remove("open"); current = null; }
   function openPanel(name, focusIndex) {
     current = name;
-    $("h3", panel).textContent = { services: "Prijzen & behandelingen", gallery: "Galerij", hours: "Openingsuren", settings: "Instellingen", help: "Zo werkt de bewerkmodus" }[name];
+    $("h3", panel).textContent = { services: "Prijzen & behandelingen", gallery: "Galerij", hours: "Openingsuren", locations: "Vestigingen", settings: "Instellingen", help: "Zo werkt de bewerkmodus" }[name];
+    if (name === "locations") loadLogins();
     renderPanel(focusIndex);
     panel.classList.add("open");
     $("[data-panel-save]", panel).hidden = name === "help";
@@ -228,6 +230,9 @@ export function startEditor({ getContent, setContent }) {
     const b = e.target.closest("[data-act]");
     if (!b) return;
     const [act, path, extra] = b.dataset.act.split("|");
+    if (act === "addloc") return addLocation(b);
+    if (act === "pw") return changePassword(+extra, b);
+    if (act === "delloc") return deleteLocation(+extra, b);
     const list = path ? getPath(draft, path) : null;
     const i = +extra;
     if (act === "up" && i > 0) [list[i - 1], list[i]] = [list[i], list[i - 1]];
@@ -339,10 +344,44 @@ export function startEditor({ getContent, setContent }) {
             <label>Hoeveel dagen vooruit boeken<select data-k="settings.max_days" data-t="int">
               ${[7, 14, 21, 30, 60].map(m => `<option value="${m}" ${+draft.settings.max_days === m ? "selected" : ""}>${m} dagen</option>`).join("")}</select></label>
           </div></section>
-        <section class="ed-card"><h4>Klanten tegelijk per vestiging</h4>
-          <p class="ed-hint">Aantal stoelen/kappers dat tegelijk kan knippen. Bij 1 is elk tijdslot weg zodra iemand boekt.</p>
-          <div class="ed-grid">${draft.locations.map((l, i) => `<label>${esc(l.name)}<select data-k="locations.${i}.chairs" data-t="int">
-              ${[1, 2, 3, 4, 5, 6].map(n => `<option value="${n}" ${+(l.chairs || 1) === n ? "selected" : ""}>${n} tegelijk</option>`).join("")}</select></label>`).join("")}</div>
+`;
+    }
+    if (current === "locations") {
+      const first = draft.locations[0];
+      h = `<p class="ed-hint">Elke vestiging verschijnt op de website, kan online geboekt worden en heeft een <b>eigen agenda met een eigen login</b>. Openingsuren stel je in bij <b>Openingsuren</b>.</p>` +
+        draft.locations.map((l, i) => `
+        <section class="ed-card">
+          <h4>${esc(l.name)}</h4>
+          <div class="ed-grid">
+            <label>Naam${txtIn(`locations.${i}.name`, l.name, "bv. Leuven", 40)}</label>
+            <label>Telefoon${txtIn(`locations.${i}.phone`, l.phone, "04xx xx xx xx", 20)}</label>
+            <label class="ed-full">Adres${txtIn(`locations.${i}.address`, l.address, "Straat 1, 3000 Gemeente", 120)}</label>
+            <label class="ed-full">Google Maps-link <small>(optioneel)</small>${txtIn(`locations.${i}.maps`, l.maps, "https://maps.app.goo.gl/…", 300)}</label>
+            <label>Klanten tegelijk<select data-k="locations.${i}.chairs" data-t="int">
+              ${[1, 2, 3, 4, 5, 6].map(n => `<option value="${n}" ${+(l.chairs || 1) === n ? "selected" : ""}>${n} tegelijk</option>`).join("")}</select></label>
+          </div>
+          <div class="ed-login">
+            <p>Agenda-login: ${loginName(l) ? `<b>${esc(loginName(l))}</b>` : logins ? `<span class="t-no">geen login</span>` : "…"}</p>
+            ${loginName(l) ? `<div class="ed-inline">
+              <input type="password" data-pw="${i}" placeholder="Nieuw wachtwoord (min. 8 tekens)" autocomplete="new-password">
+              <button type="button" class="ed-btn ed-btn--ghost" data-act="pw||${i}">Wachtwoord wijzigen</button></div>` : ""}
+          </div>
+          ${draft.locations.length > 1 ? `<button type="button" class="ed-add ed-add--danger" data-act="delloc||${i}">Vestiging verwijderen</button>` : ""}
+        </section>`).join("") + `
+        <section class="ed-card ed-card--new">
+          <h4>+ Nieuwe vestiging</h4>
+          <div class="ed-grid">
+            <label>Naam<input type="text" id="nlName" maxlength="40" placeholder="bv. Leuven"></label>
+            <label>Telefoon<input type="text" id="nlPhone" maxlength="20" placeholder="04xx xx xx xx"></label>
+            <label class="ed-full">Adres<input type="text" id="nlAddress" maxlength="120" placeholder="Straat 1, 3000 Gemeente"></label>
+            <label class="ed-full">Google Maps-link <small>(optioneel)</small><input type="text" id="nlMaps" maxlength="300" placeholder="https://maps.app.goo.gl/…"></label>
+            <label>Gebruikersnaam agenda<input type="text" id="nlUser" maxlength="30" autocapitalize="none" spellcheck="false" placeholder="bv. leuven"></label>
+            <label>Wachtwoord<input type="password" id="nlPw" maxlength="72" autocomplete="new-password" placeholder="min. 8 tekens"></label>
+            <label>Herhaal wachtwoord<input type="password" id="nlPw2" maxlength="72" autocomplete="new-password"></label>
+          </div>
+          <p class="ed-hint" style="margin:12px 0 0">Start met dezelfde openingsuren als ${esc(first?.name || "de eerste vestiging")}. Daarna aan te passen bij <b>Openingsuren</b>.</p>
+          <button type="button" class="ed-btn ed-btn--gold ed-wide" data-act="addloc">Vestiging aanmaken</button>
+          <p class="book__err" id="nlErr" role="alert"></p>
         </section>`;
     }
     if (current === "help") {
@@ -356,7 +395,101 @@ export function startEditor({ getContent, setContent }) {
         <li><b>Afspraken</b> beheer je niet hier, maar met de login van de vestiging (Haacht of Wilsele).</li></ol>`;
     }
     pBody.innerHTML = h;
+    // gebruikersnaam automatisch invullen op basis van de naam
+    const nn = $("#nlName", pBody), nu = $("#nlUser", pBody);
+    if (nn && nu) {
+      nn.addEventListener("input", () => { if (!nu.dataset.touched) nu.value = slug(nn.value); });
+      nu.addEventListener("input", () => { nu.dataset.touched = "1"; });
+    }
     if (focusIndex != null) $(".is-focus", pBody)?.scrollIntoView({ block: "center" });
+  }
+
+  // ---------- Vestigingen ----------
+  let logins = null; // { vestiging-id: gebruikersnaam }
+  const loginName = l => logins ? logins[l.id] : (l.login || null);
+  const slug = v => String(v || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 30);
+  const normPhone = v => {
+    const d = String(v || "").replace(/\D/g, "");
+    if (!d) return "";
+    if (d.startsWith("0") && d.length === 10) return `+32${d.slice(1)}`;
+    if (d.startsWith("32")) return `+${d}`;
+    return String(v).trim();
+  };
+  async function loadLogins() {
+    try {
+      const { logins: list } = await api.manageLocation("list");
+      logins = Object.fromEntries((list || []).map(x => [x.loc, x.username]));
+    } catch { logins = null; }
+    if (current === "locations") renderPanel();
+  }
+  const busy = (b, on, label) => {
+    b.disabled = on;
+    if (on) { b.dataset.label = b.textContent; b.innerHTML = `<span class="spinner"></span>${label}`; } else b.textContent = b.dataset.label;
+  };
+
+  async function addLocation(btn) {
+    const err = $("#nlErr", pBody);
+    const name = $("#nlName", pBody).value.trim(), address = $("#nlAddress", pBody).value.trim();
+    const phone = normPhone($("#nlPhone", pBody).value), maps = $("#nlMaps", pBody).value.trim();
+    const username = $("#nlUser", pBody).value.trim().toLowerCase();
+    const pw = $("#nlPw", pBody).value, pw2 = $("#nlPw2", pBody).value;
+    err.textContent = "";
+    if (name.length < 2) return (err.textContent = "Vul de naam van de vestiging in.");
+    if (address.length < 5) return (err.textContent = "Vul het adres in (straat en gemeente).");
+    if (!/^[a-z0-9][a-z0-9._-]{2,29}$/.test(username) || username === "admin") return (err.textContent = errText("ongeldige_gebruikersnaam"));
+    if (pw.length < 8) return (err.textContent = errText("wachtwoord_te_kort"));
+    if (pw !== pw2) return (err.textContent = "De wachtwoorden zijn niet gelijk.");
+    let id = slug(name) || "vestiging";
+    if (id === "admin") id = "vestiging-admin";
+    for (let n = 2; draft.locations.some(l => l.id === id); n++) id = `${slug(name)}-${n}`;
+
+    busy(btn, true, "Aanmaken…");
+    try {
+      await api.manageLocation("create", { loc: id, username, password: pw });
+    } catch (e) { busy(btn, false); return (err.textContent = errText(e)); }
+    const first = draft.locations[0];
+    draft.locations.push({ id, name, address, phone, maps, chairs: 1, login: username });
+    draft.hours[id] = clone(draft.hours[first?.id] || { 0: null, 1: [540, 1080], 2: [540, 1080], 3: [540, 1080], 4: [540, 1080], 5: [540, 1080], 6: [540, 1080] });
+    if (logins) logins[id] = username;
+    markDirty("locations"); markDirty("hours");
+    await save();
+    preview();
+    renderPanel();
+    toast(`Vestiging ${name} staat online. Agenda-login: ${username}`, "ok");
+  }
+
+  async function changePassword(i, btn) {
+    const l = draft.locations[i], input = $(`[data-pw="${i}"]`, pBody);
+    if ((input.value || "").length < 8) return toast(errText("wachtwoord_te_kort"), "bad");
+    busy(btn, true, "Wijzigen…");
+    try {
+      await api.manageLocation("password", { loc: l.id, password: input.value });
+      input.value = "";
+      toast(`Wachtwoord van ${l.name} gewijzigd.`, "ok");
+    } catch (e) { toast(errText(e), "bad"); }
+    busy(btn, false);
+  }
+
+  async function deleteLocation(i, btn) {
+    const l = draft.locations[i];
+    if (!confirm(`Vestiging ${l.name} verwijderen? Ze verdwijnt van de website en de agenda-login wordt verwijderd.`)) return;
+    busy(btn, true, "Verwijderen…");
+    try {
+      try { await api.manageLocation("delete", { loc: l.id }); }
+      catch (e) {
+        if (e.message !== "heeft_afspraken") throw e;
+        if (!confirm(`Er staan nog ${e.count} komende afspraken bij ${l.name}. Toch verwijderen? Bel die klanten dan zelf even op.`)) { busy(btn, false); return; }
+        await api.manageLocation("delete", { loc: l.id, force: true });
+      }
+    } catch (e) { busy(btn, false); return toast(errText(e), "bad"); }
+    draft.locations.splice(i, 1);
+    delete draft.hours[l.id];
+    if (logins) delete logins[l.id];
+    markDirty("locations"); markDirty("hours");
+    await save();
+    preview();
+    renderPanel();
+    toast(`Vestiging ${l.name} verwijderd.`, "ok");
   }
 
   // gsm: tik op foto → knop tonen

@@ -57,6 +57,21 @@ const supabaseApi = {
     if (!path.startsWith(`${SITE}/`)) return;
     await c.storage.from("site").remove([path]);
   },
+  // logins van vestigingen (via de Edge Function "vestiging", alleen voor admin)
+  async manageLocation(action, data = {}) {
+    const c = await sb();
+    const { data: res, error } = await c.functions.invoke("vestiging", {
+      body: { action, domain: CFG.loginDomain, ...data },
+    });
+    if (error) {
+      let body = {};
+      try { body = await error.context.json(); } catch {}
+      const e = new Error(body.error || "serverfout");
+      e.count = body.count;
+      throw e;
+    }
+    return res;
+  },
   async getBusy(loc, from, to) {
     const c = await sb();
     return check(await c.rpc("get_busy", { p_site: SITE, p_loc: loc, p_from: from.toISOString(), p_to: to.toISOString() }));
@@ -147,6 +162,37 @@ const demoApi = {
     return await new Promise(ok => { const r = new FileReader(); r.onload = () => ok(r.result); r.readAsDataURL(blob); });
   },
   async deleteImage() {},
+  async manageLocation(action, data = {}) {
+    if ((await this.session())?.role !== "admin") fail("geen_toegang");
+    await delay(400);
+    const users = LS.get("users", {}); // extra demo-logins: { gebruikersnaam: vestiging }
+    const logins = [...Object.entries(DEMO_USERS).filter(([, r]) => r !== "admin").map(([u, r]) => ({ loc: r, username: u })),
+      ...Object.entries(users).map(([u, r]) => ({ loc: r, username: u }))];
+    if (action === "list") return { logins };
+    const cur = logins.find(l => l.loc === data.loc);
+    if (action === "create") {
+      if (!/^[a-z0-9][a-z0-9._-]{2,29}$/.test(data.username || "") || data.username === "admin") fail("ongeldige_gebruikersnaam");
+      if ((data.password || "").length < 8) fail("wachtwoord_te_kort");
+      if (cur) fail("login_bestaat");
+      if (logins.some(l => l.username === data.username)) fail("gebruikersnaam_bezet");
+      LS.set("users", { ...users, [data.username]: data.loc });
+      LS.set("passwords", { ...LS.get("passwords", {}), [data.username]: data.password });
+      return { ok: true, username: data.username };
+    }
+    if (action === "password") {
+      if (!cur) fail("geen_login");
+      if ((data.password || "").length < 8) fail("wachtwoord_te_kort");
+      LS.set("passwords", { ...LS.get("passwords", {}), [cur.username]: data.password });
+      return { ok: true };
+    }
+    if (action === "delete") {
+      const n = LS.get("bookings", []).filter(b => b.loc === data.loc && b.status === "bevestigd" && +new Date(b.starts_at) > Date.now()).length;
+      if (n && !data.force) { const e = new Error("heeft_afspraken"); e.count = n; throw e; }
+      if (cur && users[cur.username]) { delete users[cur.username]; LS.set("users", users); }
+      return { ok: true };
+    }
+    fail("onbekende_actie");
+  },
   async getBusy(loc, from, to) { await delay(200); return demoBusy(loc, from, to); },
   async createBooking(b) {
     await delay(400);
@@ -182,8 +228,11 @@ const demoApi = {
   async signIn(user, password) {
     await delay(400);
     const u = user.trim().toLowerCase();
-    if (!DEMO_USERS[u] || password !== "demo") fail("login");
-    LS.set("session", { role: DEMO_USERS[u], site: SITE, email: toEmail(u) });
+    const extra = LS.get("users", {}), pws = LS.get("passwords", {});
+    const role = DEMO_USERS[u] || extra[u];
+    const okPw = pws[u] ? password === pws[u] : password === "demo";
+    if (!role || !okPw) fail("login");
+    LS.set("session", { role, site: SITE, email: toEmail(u) });
     return this.session();
   },
   async signOut() { localStorage.removeItem(`demo:${SITE}:session`); },

@@ -157,8 +157,45 @@ function renderHours() {
   }).join("<br>");
 }
 
+// telefoonnummer leesbaar: +32470513916 → 0470 51 39 16
+const telPretty = p => {
+  const d = String(p || "").replace(/\D/g, ""), n = d.startsWith("32") ? `0${d.slice(2)}` : d;
+  return n.length === 10 ? `${n.slice(0, 4)} ${n.slice(4, 6)} ${n.slice(6, 8)} ${n.slice(8)}` : p;
+};
+
+// vestigingen uit de data: kaarten, belregel en footer (kaarten alleen opnieuw als er iets veranderd is)
+let locSig = "";
+function renderLocations() {
+  const sig = JSON.stringify(C.locations.map(l => [l.id, l.name, l.address, l.phone, l.maps]));
+  if (sig !== locSig) {
+    locSig = sig;
+    $("#locGrid").innerHTML = C.locations.map(l => {
+      const [street, ...rest] = String(l.address || "").split(/,\s*/);
+      const q = encodeURIComponent(`Classic Barbershop, ${l.address}`);
+      const route = l.maps || `https://www.google.com/maps/search/?api=1&query=${q}`;
+      return `<article class="loc reveal">
+        <div class="loc__map"><iframe title="Kaart Classic Barbershop ${esc(l.name)}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=${q}&z=16&output=embed"></iframe></div>
+        <div class="loc__body">
+          <div class="loc__top"><h3>${esc(l.name)}</h3><span class="status" data-status="${esc(l.id)}"></span></div>
+          <p class="loc__addr">${esc(street)}${rest.length ? `<br>${esc(rest.join(", "))}` : ""}</p>
+          <ul class="hours" data-hours="${esc(l.id)}"></ul>
+          <div class="loc__actions">
+            <a href="${esc(route)}" target="_blank" rel="noopener" class="btn btn--ghost btn--sm">Route</a>
+            ${l.phone ? `<a href="tel:${esc(l.phone)}" class="btn btn--gold btn--sm">${esc(telPretty(l.phone))}</a>` : ""}
+          </div>
+        </div>
+      </article>`;
+    }).join("");
+    observe($("#locGrid"));
+  }
+  const withTel = C.locations.filter(l => l.phone);
+  $("#callLine").innerHTML = `Liever bellen? ${withTel.map(l => `${esc(l.name)}&nbsp;<a href="tel:${esc(l.phone)}">${esc(telPretty(l.phone)).replace(/ /g, "&nbsp;")}</a>`).join(" · ")}`;
+  $("#footerContact").innerHTML = withTel.map(l => `${esc(l.name)} · <a href="tel:${esc(l.phone)}">${esc(telPretty(l.phone))}</a>`).join("<br>");
+}
+
 export function renderAll() {
   applyTexts();
+  renderLocations();
   renderMenu();
   renderGallery();
   renderHours();

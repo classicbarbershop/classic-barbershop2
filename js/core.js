@@ -155,8 +155,17 @@ export const ERRORS = {
   geen_toegang: "Je hebt geen toegang tot deze actie.",
   login: "Gebruikersnaam of wachtwoord klopt niet.",
   offline: "Geen verbinding. Probeer het opnieuw.",
+  ongeldige_gebruikersnaam: "Gebruikersnaam: minstens 3 tekens, alleen kleine letters, cijfers, punt of streepje.",
+  gebruikersnaam_bezet: "Deze gebruikersnaam bestaat al. Kies een andere.",
+  wachtwoord_te_kort: "Het wachtwoord moet minstens 8 tekens hebben.",
+  login_bestaat: "Deze vestiging heeft al een login.",
+  geen_login: "Deze vestiging heeft nog geen login.",
+  heeft_afspraken: "Deze vestiging heeft nog komende afspraken.",
+  niet_ingelogd: "Je sessie is verlopen. Log opnieuw in.",
 };
 export const errText = e => {
-  const code = Object.keys(ERRORS).find(k => String(e?.message || e).includes(k));
+  const msg = String(e?.message || e).trim();
+  if (ERRORS[msg]) return ERRORS[msg];
+  const code = Object.keys(ERRORS).sort((a, b) => b.length - a.length).find(k => msg.includes(k));
   return code ? ERRORS[code] : "Er ging iets mis. Probeer het opnieuw of bel de zaak.";
 };

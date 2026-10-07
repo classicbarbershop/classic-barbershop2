@@ -4,8 +4,8 @@ const H = (a, b) => [a * 60, b * 60];
 
 export const DEFAULTS = {
   locations: [
-    { id: "haacht", name: "Haacht", address: "Vekestraat 1, 3150 Haacht", phone: "+32470513916", chairs: 1 },
-    { id: "wilsele", name: "Wilsele", address: "Aarschotsesteenweg 664, 3012 Wilsele", phone: "+32492860437", chairs: 1 },
+    { id: "haacht", name: "Haacht", address: "Vekestraat 1, 3150 Haacht", phone: "+32470513916", chairs: 1, maps: "https://maps.app.goo.gl/KP83XtzVL5pKkiDQA", login: "haacht" },
+    { id: "wilsele", name: "Wilsele", address: "Aarschotsesteenweg 664, 3012 Wilsele", phone: "+32492860437", chairs: 1, maps: "https://maps.app.goo.gl/obsEbNireDGvQCBF6", login: "wilsele" },
   ],
 
   // 0 = zondag … 6 = zaterdag · [open, sluit] in minuten na middernacht · null = gesloten

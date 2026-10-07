@@ -37,6 +37,10 @@ Eén Supabase-project kan meerdere zaken bedienen: elke zaak heeft een eigen `si
 2. Zet ze in `config.js` (`supabaseUrl`, `supabaseKey`). Deze key mag openbaar zijn; de beveiliging zit in de database.
 3. Push naar GitHub. Klaar.
 
+## 5. Vestigingen zelf laten toevoegen
+Edge Function `supabase/functions/vestiging/index.ts` deployen als **vestiging** (Edge Functions → Deploy a new function → Via editor), met "Verify JWT" uit: de functie controleert zelf of de aanvrager admin is.
+Daarna kan de eigenaar in de bewerkmodus via **Vestigingen** zelf een vestiging met eigen login toevoegen, het wachtwoord wijzigen of een vestiging verwijderen.
+
 ## Wat is beveiligd (getest)
 - Bezoekers kunnen alleen vrije/bezette **tijden** zien, nooit namen of nummers.
 - Boeken gaat via één databasefunctie die prijs, duur, openingsuren en vrije plaats zelf controleert, met een slot zodat twee mensen nooit hetzelfde tijdslot krijgen.
