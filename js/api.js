@@ -1,6 +1,6 @@
 // Eén aanspreekpunt voor alle data: Supabase in productie, een lokale demo om te testen.
-import { DEFAULTS } from "./defaults.js?v=202610071424";
-import { clone, uid, inBrussels, todayISO, addDays, hoursFor, isFree } from "./core.js?v=202610071424";
+import { DEFAULTS } from "./defaults.js?v=202610071443";
+import { clone, uid, inBrussels, todayISO, addDays, hoursFor, isFree } from "./core.js?v=202610071443";
 
 const CFG = window.SITE_CONFIG || {};
 const SITE = CFG.site || "site";
@@ -94,6 +94,11 @@ const supabaseApi = {
     return me;
   },
   async signOut() { const c = await sb(); await c.auth.signOut(); },
+  async changeOwnPassword(password) {
+    const c = await sb();
+    const { error } = await c.auth.updateUser({ password });
+    if (error) throw new Error(/should be different|same/i.test(error.message) ? "zelfde_wachtwoord" : /reauth|nonce/i.test(error.message) ? "opnieuw_inloggen" : "wijzigen_mislukt");
+  },
   async session() {
     const c = await sb();
     const { data } = await c.auth.getSession();
@@ -238,6 +243,12 @@ const demoApi = {
     return this.session();
   },
   async signOut() { localStorage.removeItem(`demo:${SITE}:session`); },
+  async changeOwnPassword(password) {
+    const me = await this.session();
+    if (!me) fail("niet_ingelogd");
+    const user = me.email.split("@")[0];
+    LS.set("passwords", { ...LS.get("passwords", {}), [user]: password });
+  },
   async session() { return LS.get("session", null); },
   async listBookings(loc, from, to) {
     const me = await this.session();

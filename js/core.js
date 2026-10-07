@@ -162,6 +162,9 @@ export const ERRORS = {
   geen_login: "Deze vestiging heeft nog geen login.",
   heeft_afspraken: "Deze vestiging heeft nog komende afspraken.",
   niet_ingelogd: "Je sessie is verlopen. Log opnieuw in.",
+  zelfde_wachtwoord: "Kies een ander wachtwoord dan het huidige.",
+  opnieuw_inloggen: "Log uit en opnieuw in, en probeer het dan nog eens.",
+  wijzigen_mislukt: "Wijzigen is niet gelukt. Probeer het opnieuw.",
 };
 export const errText = e => {
   const msg = String(e?.message || e).trim();

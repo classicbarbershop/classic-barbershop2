@@ -1,6 +1,6 @@
 // Bewerkmodus voor de eigenaar (rol: admin). Wordt alleen geladen na inloggen.
-import { $, $$, esc, fmt, clone, uid, sanitize, compressImage, toast, errText, DAY_NAMES } from "./core.js?v=202610071424";
-import { api } from "./api.js?v=202610071424";
+import { $, $$, esc, fmt, clone, uid, sanitize, compressImage, toast, errText, DAY_NAMES } from "./core.js?v=202610071443";
+import { api } from "./api.js?v=202610071443";
 
 const KEY_LABEL = { texts: "teksten", images: "foto's", services: "prijzen", gallery: "galerij", hours: "openingsuren", settings: "instellingen", locations: "vestigingen" };
 
@@ -233,6 +233,7 @@ export function startEditor({ getContent, setContent }) {
     if (act === "addloc") return addLocation(b);
     if (act === "pw") return changePassword(+extra, b);
     if (act === "delloc") return deleteLocation(+extra, b);
+    if (act === "adminpw") return changeAdminPassword(b);
     const list = path ? getPath(draft, path) : null;
     const i = +extra;
     if (act === "up" && i > 0) [list[i - 1], list[i]] = [list[i], list[i - 1]];
@@ -344,6 +345,15 @@ export function startEditor({ getContent, setContent }) {
             <label>Hoeveel dagen vooruit boeken<select data-k="settings.max_days" data-t="int">
               ${[7, 14, 21, 30, 60].map(m => `<option value="${m}" ${+draft.settings.max_days === m ? "selected" : ""}>${m} dagen</option>`).join("")}</select></label>
           </div></section>
+        <section class="ed-card"><h4>Jouw admin-wachtwoord</h4>
+          <p class="ed-hint">Het wachtwoord waarmee je inlogt als <b>admin</b>. Minstens 8 tekens.</p>
+          <div class="ed-grid">
+            <label>Nieuw wachtwoord<input type="password" id="apw1" maxlength="72" autocomplete="new-password"></label>
+            <label>Herhaal wachtwoord<input type="password" id="apw2" maxlength="72" autocomplete="new-password"></label>
+          </div>
+          <button type="button" class="ed-btn ed-btn--ghost ed-wide" data-act="adminpw">Wachtwoord wijzigen</button>
+          <p class="book__err" id="apwErr" role="alert"></p>
+        </section>
 `;
     }
     if (current === "locations") {
@@ -467,6 +477,20 @@ export function startEditor({ getContent, setContent }) {
       input.value = "";
       toast(`Wachtwoord van ${l.name} gewijzigd.`, "ok");
     } catch (e) { toast(errText(e), "bad"); }
+    busy(btn, false);
+  }
+
+  async function changeAdminPassword(btn) {
+    const a = $("#apw1", pBody), b2 = $("#apw2", pBody), err = $("#apwErr", pBody);
+    err.textContent = "";
+    if (a.value.length < 8) return (err.textContent = errText("wachtwoord_te_kort"));
+    if (a.value !== b2.value) return (err.textContent = "De wachtwoorden zijn niet gelijk.");
+    busy(btn, true, "Wijzigen…");
+    try {
+      await api.changeOwnPassword(a.value);
+      a.value = b2.value = "";
+      toast("Je admin-wachtwoord is gewijzigd.", "ok");
+    } catch (e) { err.textContent = errText(e); }
     busy(btn, false);
   }
 

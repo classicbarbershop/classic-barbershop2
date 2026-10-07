@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="nl-BE">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Handleiding — Classic Barbershop website</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" href="img/icon-192.png">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --ink: #141414; --muted: #5e5950; --gold: #8f6f33; --line: rgba(17,17,17,.12); --bg2: #f7f5f0; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #fff; color: var(--ink); font: 15.5px/1.6 Manrope, system-ui, sans-serif; }
+    main { max-width: 820px; margin: 0 auto; padding: 40px 22px 70px; }
+    header { display: flex; align-items: center; gap: 18px; padding-bottom: 22px; border-bottom: 1px solid var(--line); }
+    header img { height: 72px; }
+    h1 { font: 600 36px/1.1 "Cormorant Garamond", Georgia, serif; margin: 0; }
+    header p { margin: 4px 0 0; color: var(--muted); }
+    h2 { font: 600 26px/1.2 "Cormorant Garamond", Georgia, serif; margin: 34px 0 10px; }
+    h2 small { font: 700 11px Manrope, sans-serif; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: 4px; }
+    .box { border: 1px solid var(--line); border-radius: 14px; padding: 16px 20px; background: var(--bg2); }
+    table { width: 100%; border-collapse: collapse; margin: 6px 0; }
+    td, th { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+    code { background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; font-size: 14px; }
+    ol, ul { padding-left: 22px; margin: 6px 0; }
+    li { margin: 4px 0; }
+    .warn { border-left: 3px solid var(--gold); padding: 10px 16px; background: #fbf8f1; border-radius: 0 10px 10px 0; }
+    @media print { main { padding: 0; } h2 { break-after: avoid; } .box, table { break-inside: avoid; } }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="img/logo-dark.png" alt="Classic Barbershop">
+    <div><h1>Handleiding website</h1><p>classic-barbershop.be — alles wat je zelf kan aanpassen en beheren</p></div>
+  </header>
+
+  <h2><small>Inloggen</small>Waar en met welke login?</h2>
+  <p>Onderaan op de website, links, staat de knop <b>Inloggen</b>. Je typt alleen de gebruikersnaam (bv. <code>haacht</code>), niet een e-mailadres.</p>
+  <table>
+    <tr><th>Gebruikersnaam</th><th>Waarvoor</th></tr>
+    <tr><td><code>admin</code></td><td>De website aanpassen: teksten, foto's, prijzen, openingsuren, vestigingen en instellingen</td></tr>
+    <tr><td><code>haacht</code></td><td>Agenda en afspraken van Haacht</td></tr>
+    <tr><td><code>wilsele</code></td><td>Agenda en afspraken van Wilsele</td></tr>
+  </table>
+
+  <h2><small>Admin</small>De website aanpassen</h2>
+  <ul>
+    <li><b>Tekst:</b> klik op een tekst en typ. Shift + Enter = nieuwe regel.</li>
+    <li><b>Foto:</b> ga met de muis over een foto en klik op <b>Foto wijzigen</b> (gsm: tik op de foto).</li>
+    <li><b>Prijzen</b>, <b>Galerij</b>, <b>Openingsuren</b>, <b>Vestigingen</b>, <b>Instellingen</b>: knoppen in de balk onderaan.</li>
+    <li>Klik altijd op <b>Opslaan</b>. Pas dan staat het online. Met <b>Bekijken</b> zie je de site zoals een klant.</li>
+  </ul>
+  <div class="warn">Openingsuren gelden ook meteen voor de tijden waarop klanten kunnen boeken. Een vrije dag of vakantie blokkeer je in de agenda van die vestiging.</div>
+
+  <h2><small>Vestigingen</small>Een nieuwe zaak toevoegen</h2>
+  <ol>
+    <li>Log in als <code>admin</code> → <b>Vestigingen</b>.</li>
+    <li>Vul onderaan naam, adres, telefoon en (optioneel) de Google Maps-link in.</li>
+    <li>Kies een gebruikersnaam en wachtwoord voor de agenda van die zaak → <b>Vestiging aanmaken</b>.</li>
+    <li>Pas daarna de uren aan bij <b>Openingsuren</b>. De zaak staat meteen op de site en is online te boeken.</li>
+  </ol>
+  <p>Hier wijzig je ook het wachtwoord van een agenda-login (bv. als een medewerker vertrekt) of verwijder je een vestiging.</p>
+
+  <h2><small>Agenda</small>Afspraken beheren</h2>
+  <ul>
+    <li><b>Agenda:</b> dag- en weekoverzicht. Tik op een afspraak voor alle gegevens, bellen of WhatsApp.</li>
+    <li>Markeer als <b>Voltooid</b> of <b>Niet gekomen</b>, <b>Wijzigen / verplaatsen</b> of <b>Annuleren</b>. Na annuleren is het tijdslot meteen weer vrij op de site.</li>
+    <li><b>+ Afspraak</b>: telefonische afspraken zelf inplannen. <b>Blokkeren</b>: pauze, vrije dag of vakantie.</li>
+    <li><b>Komende</b>: alle komende afspraken. <b>Klanten</b>: klantenlijst met geschiedenis, te exporteren naar Excel.</li>
+    <li>Tip: zet de agenda op je gsm als app: open de agenda in je browser → <b>Toevoegen aan beginscherm</b>.</li>
+  </ul>
+
+  <h2><small>Instellingen</small>Boeken</h2>
+  <p>Bij <b>Instellingen</b> en <b>Vestigingen</b> kies je: hoeveel klanten tegelijk per zaak (stoelen), om de hoeveel minuten er een tijdslot is, hoe ver vooruit en hoe kort op voorhand klanten kunnen boeken, en eventueel een online toeslag. Je <b>admin-wachtwoord</b> wijzig je ook bij Instellingen.</p>
+
+  <h2><small>Belangrijk</small>Om alles online te houden</h2>
+  <div class="box">
+    <ul>
+      <li><b>Domein</b> <code>classic-barbershop.be</code>: elk jaar verlengen bij je domeinprovider, anders gaat de site offline.</li>
+      <li><b>Supabase</b> (de database met afspraken en logins, gratis): krijg je ooit een mail dat het project gepauzeerd is, log in op supabase.com en klik op <b>Restore</b>.</li>
+      <li><b>GitHub</b> (waar de website zelf staat, gratis): hier hoef je niets te doen.</li>
+      <li>Wachtwoord vergeten van een agenda? Wijzig het als <code>admin</code> bij <b>Vestigingen</b>.</li>
+    </ul>
+  </div>
+</main>
+</body>
+</html>
