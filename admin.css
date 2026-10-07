@@ -325,3 +325,14 @@ body.legal { padding: 48px 0 80px; }
 .ed-panel input[type=password]:focus { outline: none; border-color: var(--gold); }
 .ed-wide { width: 100%; margin-top: 14px; }
 .ed-grid label small { text-transform: none; letter-spacing: 0; font-weight: 500; }
+
+/* ---------- logo van de zaak ---------- */
+.brand:has(.brand__logo) { display: inline-flex; align-items: center; }
+.brand__logo { display: block; height: 58px; width: auto; transition: height .4s var(--ease); filter: drop-shadow(0 4px 14px rgba(0,0,0,.5)); }
+.nav.scrolled .brand__logo { height: 48px; }
+.brand--lg .brand__logo { height: 140px; }
+.footer .brand--lg .brand__logo { height: 120px; margin-bottom: 14px; }
+.auth__brand .brand__logo { height: 150px; }
+.bh-top .brand__logo { height: 46px; }
+.legal .brand__logo { height: 110px; }
+@media (max-width: 640px) { .brand__logo { height: 50px; } .nav.scrolled .brand__logo { height: 44px; } }
