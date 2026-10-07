@@ -1,6 +1,6 @@
 // Eén aanspreekpunt voor alle data: Supabase in productie, een lokale demo om te testen.
-import { DEFAULTS } from "./defaults.js?v=202610071502";
-import { clone, uid, inBrussels, todayISO, addDays, hoursFor, isFree } from "./core.js?v=202610071502";
+import { DEFAULTS } from "./defaults.js?v=202610071512";
+import { clone, uid, inBrussels, todayISO, addDays, hoursFor, isFree } from "./core.js?v=202610071512";
 
 const CFG = window.SITE_CONFIG || {};
 const SITE = CFG.site || "site";
@@ -8,6 +8,21 @@ const isLocal = ["localhost", "127.0.0.1", "[::1]"].includes(location.hostname) 
 
 export const MODE = CFG.supabaseUrl && CFG.supabaseKey ? "supabase" : isLocal ? "demo" : "off";
 export const SITE_ID = SITE;
+
+// "Blijf ingelogd": aan → sessie blijft bewaard (localStorage), uit → weg zodra app/venster sluit (sessionStorage)
+const REMEMBER_KEY = `salon-remember-${SITE}`;
+const remember = () => { try { return localStorage.getItem(REMEMBER_KEY) !== "0"; } catch { return true; } };
+export function setRemember(on) { try { localStorage.setItem(REMEMBER_KEY, on ? "1" : "0"); } catch {} }
+const authStore = {
+  getItem: k => { try { return (remember() ? localStorage : sessionStorage).getItem(k); } catch { return null; } },
+  setItem: (k, v) => {
+    try {
+      (remember() ? localStorage : sessionStorage).setItem(k, v);
+      (remember() ? sessionStorage : localStorage).removeItem(k);
+    } catch {}
+  },
+  removeItem: k => { try { localStorage.removeItem(k); sessionStorage.removeItem(k); } catch {} },
+};
 
 const toEmail = u => (u.includes("@") ? u : `${u.trim().toLowerCase()}@${CFG.loginDomain || "salon.local"}`);
 const fail = code => { throw new Error(code); };
@@ -26,7 +41,7 @@ function sb() {
     s.onerror = () => ko(new Error("offline"));
     document.head.append(s);
   }).then(m => m.createClient(CFG.supabaseUrl, CFG.supabaseKey, {
-      auth: { persistSession: true, autoRefreshToken: true, storageKey: `salon-auth-${SITE}` },
+      auth: { persistSession: true, autoRefreshToken: true, storageKey: `salon-auth-${SITE}`, storage: authStore },
       // nooit uit de browsercache: altijd verse gegevens en geen verwarring tussen domeinen
       global: { fetch: (url, opts = {}) => fetch(url, { ...opts, cache: "no-store" }) },
     }));
@@ -239,17 +254,17 @@ const demoApi = {
     const role = DEMO_USERS[u] || extra[u];
     const okPw = pws[u] ? password === pws[u] : password === "demo";
     if (!role || !okPw) fail("login");
-    LS.set("session", { role, site: SITE, email: toEmail(u) });
+    authStore.setItem(`demo:${SITE}:session`, JSON.stringify({ role, site: SITE, email: toEmail(u) }));
     return this.session();
   },
-  async signOut() { localStorage.removeItem(`demo:${SITE}:session`); },
+  async signOut() { authStore.removeItem(`demo:${SITE}:session`); },
   async changeOwnPassword(password) {
     const me = await this.session();
     if (!me) fail("niet_ingelogd");
     const user = me.email.split("@")[0];
     LS.set("passwords", { ...LS.get("passwords", {}), [user]: password });
   },
-  async session() { return LS.get("session", null); },
+  async session() { try { return JSON.parse(authStore.getItem(`demo:${SITE}:session`)); } catch { return null; } },
   async listBookings(loc, from, to) {
     const me = await this.session();
     if (me?.role !== loc) fail("geen_toegang");

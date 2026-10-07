@@ -1,6 +1,6 @@
 // Bewerkmodus voor de eigenaar (rol: admin). Wordt alleen geladen na inloggen.
-import { $, $$, esc, fmt, clone, uid, sanitize, compressImage, toast, errText, ask, DAY_NAMES } from "./core.js?v=202610071502";
-import { api } from "./api.js?v=202610071502";
+import { $, $$, esc, fmt, clone, uid, sanitize, compressImage, toast, errText, ask, DAY_NAMES } from "./core.js?v=202610071512";
+import { api } from "./api.js?v=202610071512";
 
 const KEY_LABEL = { texts: "teksten", images: "foto's", services: "prijzen", gallery: "galerij", hours: "openingsuren", settings: "instellingen", locations: "vestigingen" };
 

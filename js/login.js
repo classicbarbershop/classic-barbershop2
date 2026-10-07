@@ -1,5 +1,5 @@
-import { $, errText } from "./core.js?v=202610071502";
-import { api, MODE } from "./api.js?v=202610071502";
+import { $, errText } from "./core.js?v=202610071512";
+import { api, MODE, setRemember } from "./api.js?v=202610071512";
 
 const go = me => { location.href = me.role === "admin" ? "index.html" : "beheer.html"; };
 
@@ -30,6 +30,7 @@ $("#loginForm").addEventListener("submit", async e => {
   btn.disabled = true;
   btn.innerHTML = `<span class="spinner"></span>Inloggen…`;
   try {
+    setRemember($("#remember").checked);
     go(await api.signIn(user, pass));
   } catch (ex) {
     err.textContent = errText(ex);
