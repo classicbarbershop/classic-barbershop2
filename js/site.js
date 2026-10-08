@@ -2,9 +2,9 @@
 import {
   $, $$, fmt, esc, euro, sanitize, DAY_NAMES, DAY_SHORT, MONTHS, brusselsNow, brusselsToDate,
   inBrussels, addDays, dowOf, dayLabel, hoursFor, isFree, errText,
-} from "./core.js?v=202610071654";
-import { DEFAULTS } from "./defaults.js?v=202610071654";
-import { api, MODE, loadContent } from "./api.js?v=202610071654";
+} from "./core.js?v=202610081330";
+import { DEFAULTS } from "./defaults.js?v=202610081330";
+import { api, MODE, loadContent } from "./api.js?v=202610081330";
 
 let C = structuredClone(DEFAULTS); // huidige inhoud (standaard → database)
 const locById = id => C.locations.find(l => l.id === id);
@@ -191,7 +191,23 @@ function renderLocations() {
   const withTel = C.locations.filter(l => l.phone);
   $("#callLine").innerHTML = `Liever bellen? ${withTel.map(l => `${esc(l.name)}&nbsp;<a href="tel:${esc(l.phone)}">${esc(telPretty(l.phone)).replace(/ /g, "&nbsp;")}</a>`).join(" · ")}`;
   $("#footerContact").innerHTML = withTel.map(l => `${esc(l.name)} · <a href="tel:${esc(l.phone)}">${esc(telPretty(l.phone))}</a>`).join("<br>");
+  // belknop onderaan: bij meerdere vestigingen kiest de klant zelf
+  if (withTel[0]) $("#mbarCall").href = `tel:${withTel[0].phone}`;
+  $("#callPick").innerHTML = `<p>Welke vestiging wil je bellen?</p>` + withTel.map(l =>
+    `<a href="tel:${esc(l.phone)}"><strong>${esc(l.name)}</strong><span>${esc(telPretty(l.phone))}</span></a>`).join("");
 }
+
+// ---------- Belknop: vestiging kiezen ----------
+const callBtn = $("#mbarCall"), callPick = $("#callPick");
+const setPick = open => { callPick.hidden = !open; callBtn.setAttribute("aria-expanded", open); };
+callBtn.addEventListener("click", e => {
+  if (C.locations.filter(l => l.phone).length < 2) return; // één nummer → meteen bellen
+  e.preventDefault();
+  setPick(callPick.hidden);
+});
+callPick.addEventListener("click", e => { if (e.target.closest("a")) setPick(false); });
+document.addEventListener("click", e => { if (!callPick.hidden && !e.target.closest("#mbar")) setPick(false); });
+addEventListener("scroll", () => { if (!mbar.classList.contains("show")) setPick(false); }, { passive: true });
 
 export function renderAll() {
   applyTexts();
@@ -535,7 +551,7 @@ loadContent().then(async c => {
   const link = $("#loginLink");
   if (me?.role === "admin") {
     link.lastChild.textContent = " Bewerkmodus";
-    const { startEditor } = await import("./edit.js?v=202610071654");
+    const { startEditor } = await import("./edit.js?v=202610081330");
     startEditor({ getContent: () => C, setContent: v => { C = v; renderAll(); }, me });
   } else if (me) {
     link.href = "beheer.html";
